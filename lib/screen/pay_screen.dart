@@ -1,0 +1,226 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/models/auth.dart';
+import 'package:flutter_complete_guide/models/final_order.dart';
+import 'package:flutter_complete_guide/models/product.dart';
+import 'package:flutter_complete_guide/providers/auth_provider.dart';
+import 'package:flutter_complete_guide/providers/finalorder_provider.dart';
+import 'package:flutter_complete_guide/screen/after_pay.dart';
+import 'package:flutter_complete_guide/screen/final_shop.dart';
+import 'package:flutter_complete_guide/screen/tab_bottom_admin.dart';
+import 'package:provider/provider.dart';
+
+// רשיממת החודשים
+const List<String> month = [
+  '',
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '10',
+  '11',
+  '12'
+];
+// רשימת השנים
+const List<String> years = [
+  '',
+  '2023',
+  '2024',
+  '2025',
+  '2026',
+  '2027',
+  '2028',
+  '2029',
+  '2030',
+];
+//String orderidו double finalprice טענת כניסה : הפעולה מקבלת
+//_PayScreenState טענת יציאה : מזמן את המחלקה של
+
+class PayScreen extends StatefulWidget {
+  final double finalprice;
+  final String orderid;
+
+  PayScreen(@required this.finalprice, @required this.orderid);
+  @override
+  State<PayScreen> createState() => _PayScreenState();
+}
+
+class _PayScreenState extends State<PayScreen> {
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  // טענת כניסה : הפעולה לא מקבלת משתנים
+//טענת יציאה :פעולה שבודקת אם השדות שמילאנו אם הם תקינים וממשנה את הסטטוס של ההזמנה מלא שולם לשולם
+  void _trySubmit() {
+    final isValid = _formKey.currentState.validate();
+    FocusScope.of(context).unfocus();
+
+    if (isValid) {
+      if (firstmonth == '') {
+        final snackBar = SnackBar(
+          content: const Text('you do not have a month'),
+          action: SnackBarAction(
+            label: 'enter please a month ',
+            onPressed: () {},
+          ),
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        return;
+      }
+
+      if (firstyear == '') {
+        final snackBar = SnackBar(
+          content: const Text('you do not have a year'),
+          action: SnackBarAction(
+            label: 'enter please a year ',
+            onPressed: () {},
+          ),
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        return;
+      }
+
+      _formKey.currentState.save();
+      String uid = Provider.of<AuthProvdier>(context, listen: false).getuid();
+
+      Provider.of<FinalOrderProvider>(context, listen: false)
+          .changeState(widget.orderid, 'pay');
+      Provider.of<FinalOrderProvider>(context, listen: false)
+          .changeStateProvider(widget.orderid, 'supak');
+      Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+        return AfterPay();
+      }));
+    }
+  }
+
+  String firstmonth = month.first;
+  String firstyear = years.first;
+  //String nameField, Function checkValid, String valueKey,Function changevalue טענת כניסה : פעולה שמקבלת
+//טענת יציאה: פעולה מחזירה שורה בה ניתן להקליד את הערכים של התשלום
+  Widget textfield(String nameField, Function checkValid, String valueKey) {
+    ValueKey<String> key = ValueKey(valueKey);
+    return TextFormField(
+      key: key,
+      validator: checkValid,
+      decoration: InputDecoration(
+        labelText: nameField,
+      ),
+      onSaved: (value) {},
+    );
+  }
+
+//BuildContext טענת כניסה : פעולה שמקבלת
+// טענת יציאה : פעולה שבונה מסך בו ניתן להקליד פרטי אשראי
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+        appBar: AppBar(
+          title: Text('final pay'),
+        ),
+        body: Column(
+          children: <Widget>[
+            Align(
+                alignment: Alignment.topRight,
+                child: Container(
+                  child: Text(
+                    '${widget.finalprice}\$',
+                    style: TextStyle(fontSize: 30),
+                  ),
+                )),
+            Container(
+              height: 30,
+            ),
+            Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    child: textfield('credit_number', (var value) {
+                      if (value.isEmpty || value.length != 16) {
+                        return 'Please enter a valid credit number.';
+                      }
+                      return null;
+                    }, 'credit'),
+                  ),
+                  Container(
+                    child: textfield('three numbers in the back of the card ',
+                        (var value) {
+                      if (value.isEmpty || value.length != 3) {
+                        return 'Please enter a valid credit number.';
+                      }
+                      return null;
+                    }, 'three'),
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Center(
+                        child: Row(children: <Widget>[
+                          DropdownButton<String>(
+                            value: firstmonth,
+                            icon: const Icon(Icons.arrow_downward),
+                            elevation: 16,
+                            style: const TextStyle(color: Colors.deepPurple),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.deepPurpleAccent,
+                            ),
+                            onChanged: (String value) {
+                              // This is called when the user selects an item.
+                              setState(() {
+                                firstmonth = value;
+                              });
+                            },
+                            items: month
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                          Container(
+                            child: Text('   /  '),
+                          ),
+                          DropdownButton<String>(
+                            value: firstyear,
+                            icon: const Icon(Icons.arrow_downward),
+                            elevation: 16,
+                            style: const TextStyle(color: Colors.deepPurple),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.deepPurpleAccent,
+                            ),
+                            onChanged: (String value) {
+                              // This is called when the user selects an item.
+                              setState(() {
+                                firstyear = value;
+                              });
+                            },
+                            items: years
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                        ]),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ),
+            ElevatedButton(
+                onPressed: (() {
+                  _trySubmit();
+                }),
+                child: Text('pay'))
+          ],
+        ));
+  }
+}
