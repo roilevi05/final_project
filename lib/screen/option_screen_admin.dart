@@ -12,7 +12,7 @@ class OptionScreenAdmin extends StatelessWidget {
   //טענת יציאה: פעולה שעוברת למסך המוצרים שתואם לאותה הקטגוריה
   void move(BuildContext ctx, String kind) {
     Navigator.of(ctx).push(MaterialPageRoute(builder: (_) {
-      return ProductScreenadmin(kind, isAdmin);
+      return ProductScreen(kind, isAdmin);
     }));
   }
 

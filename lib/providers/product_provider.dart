@@ -28,6 +28,8 @@ class ProductsProvider with ChangeNotifier {
           querySnapshot.docs.forEach(
             (doc) {
               print(doc['name']);
+              print(doc['isUpdate']);
+
               _products.add(
                 Product(
                     doc['name'],
@@ -44,7 +46,9 @@ class ProductsProvider with ChangeNotifier {
           );
         },
       );
-    } catch (erorr) {}
+    } catch (erorr) {
+      print(erorr);
+    }
   }
 
   String uid = '';

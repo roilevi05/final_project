@@ -11,8 +11,6 @@ import 'package:flutter_complete_guide/screen/auth_screen.dart';
 import 'package:flutter_complete_guide/screen/tab_bottom_admin.dart';
 import 'package:provider/provider.dart';
 
-//String kind BuildContext context1 List<Product> lst טענת כניסה שמקבלת
-//BigDrawer טענת יציאה : מממשת את המחלקה של
 class BigDrawer extends StatelessWidget {
   final List<Product> lst;
   BuildContext context1;

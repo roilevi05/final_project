@@ -12,8 +12,7 @@ import 'package:provider/provider.dart';
 import '../models/auth.dart';
 import '../providers/auth_provider.dart';
 
-// טענת כניסה פעולה שלא מקבלת משתנים
-//BigDrawer טענת יציאה : מממשת את המחלקה של
+
 class DrawerTabScreen extends StatelessWidget {
   const DrawerTabScreen({Key key}) : super(key: key);
 

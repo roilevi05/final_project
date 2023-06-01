@@ -12,8 +12,6 @@ import '../providers/favorite.dart';
 import '../providers/product_provider.dart';
 import 'order_screen2.dart';
 
-//String searchlastו String isAdmin טענת כניסה : הפעולה מקבלת
-//_SearchScreenState טענת יציאה : מזמן את המחלקה של
 class SearchScreen extends StatefulWidget {
   final String isAdmin;
   final String searchlast;
@@ -133,18 +131,12 @@ class _SearchScreenState extends State<SearchScreen> {
                                     margin: const EdgeInsets.all(5.0),
                                     padding: const EdgeInsets.all(5.0),
                                     width: 80,
-                                    decoration: BoxDecoration(
-                                        border:
-                                            Border.all(color: Colors.black)),
                                   ),
                                   Container(
                                     child: Text(listproducts[index].name),
                                     margin: const EdgeInsets.all(5.0),
                                     padding: const EdgeInsets.all(5.0),
                                     width: 80,
-                                    decoration: BoxDecoration(
-                                        border:
-                                            Border.all(color: Colors.black)),
                                   ),
                                   Container(
                                     width: 60,
@@ -166,9 +158,6 @@ class _SearchScreenState extends State<SearchScreen> {
                                     margin: const EdgeInsets.all(5.0),
                                     padding: const EdgeInsets.all(5.0),
                                     width: 80,
-                                    decoration: BoxDecoration(
-                                        border:
-                                            Border.all(color: Colors.black)),
                                     child:
                                         Text('${listproducts[index].price}\$'),
                                   )
@@ -188,15 +177,23 @@ class _SearchScreenState extends State<SearchScreen> {
                                 width: 140,
                               ),
                               widget.isAdmin == 'admin'
-                                  ? IconButton(
-                                      onPressed: (() {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(builder: (_) {
-                                          return UpdateProduct(
-                                              listproducts[index]);
-                                        }));
-                                      }),
-                                      icon: Icon(Icons.update))
+                                  ? Column(
+                                      children: <Widget>[
+                                        Container(
+                                          child: Text('edit'),
+                                        ),
+                                        IconButton(
+                                            onPressed: (() {
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (_) {
+                                                return UpdateProduct(
+                                                    listproducts[index]);
+                                              }));
+                                            }),
+                                            icon: Icon(Icons.edit))
+                                      ],
+                                    )
                                   : Container()
                             ],
                           )
@@ -216,7 +213,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             Row(
                               children: <Widget>[
                                 Container(
-                                  child: Text('pay for your product'),
+                                  child: Text('pay for your product  '),
                                 ),
                                 widget.isAdmin != 'admin'
                                     ? IconButton(

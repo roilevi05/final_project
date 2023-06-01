@@ -57,6 +57,9 @@ class _OrderScreenState extends State<OrderScreen> {
                 child: Row(
                   children: <Widget>[
                     Container(
+                      width: 150,
+                    ),
+                    Container(
                       margin: const EdgeInsets.all(15.0),
                       padding: const EdgeInsets.all(1.0),
                       width: 100,
@@ -70,7 +73,8 @@ class _OrderScreenState extends State<OrderScreen> {
               ),
             ),
             ElevatedButton(
-              style: TextButton.styleFrom(foregroundColor: Colors.blue),
+              style: TextButton.styleFrom(
+                  foregroundColor: Colors.white, backgroundColor: Colors.blue),
               child: Text('add order'),
               onPressed: () {
                 int sum = 0;

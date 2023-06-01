@@ -20,15 +20,15 @@ enum sortkinds { high_to_low, low_to_high, abc, nothing }
 
 enum clasifiedkinds { zero_till_one_thousand, above_one_thousand, all_products }
 
-class ProductScreenadmin extends StatefulWidget {
+class ProductScreen extends StatefulWidget {
   final String isAdmin;
   final String kind;
-  ProductScreenadmin(@required this.kind, @required this.isAdmin);
+  ProductScreen(@required this.kind, @required this.isAdmin);
   @override
-  State<ProductScreenadmin> createState() => _ProductScreenadminState();
+  State<ProductScreen> createState() => _ProductScreenState();
 }
 
-class _ProductScreenadminState extends State<ProductScreenadmin> {
+class _ProductScreenState extends State<ProductScreen> {
   bool islove = false;
   @override
   List<Product> listproducts = [];
@@ -247,18 +247,12 @@ class _ProductScreenadminState extends State<ProductScreenadmin> {
                                         child: Text(
                                           listproducts[index].name,
                                         ),
-                                        margin: const EdgeInsets.all(15.0),
+                                        margin: const EdgeInsets.all(5.0),
                                         padding: const EdgeInsets.all(5.0),
-                                        decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Colors.black)),
                                       ),
                                       Container(
-                                          margin: const EdgeInsets.all(15.0),
+                                          margin: const EdgeInsets.all(5.0),
                                           padding: const EdgeInsets.all(5.0),
-                                          decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: Colors.black)),
                                           child: Text(
                                             "${listproducts[index].price}\$",
                                             style: TextStyle(
@@ -345,10 +339,6 @@ class _ProductScreenadminState extends State<ProductScreenadmin> {
                                       padding: const EdgeInsets.all(5.0),
                                       height: 100,
                                       width: 150,
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Color.fromARGB(
-                                                  255, 81, 80, 80))),
                                     ),
                                   )
                                 ],
@@ -371,45 +361,77 @@ class _ProductScreenadminState extends State<ProductScreenadmin> {
                                             width: 150,
                                           ),
                                           widget.isAdmin != 'admin'
-                                              ? IconButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context).push(
-                                                        MaterialPageRoute(
-                                                            builder: (_) {
-                                                      return OrderScreen(
-                                                          listproducts[index]);
-                                                    }));
-                                                  },
-                                                  icon: Icon(Icons.payment))
+                                              ? Row(
+                                                  children: <Widget>[
+                                                    Container(
+                                                      child: Text(
+                                                          'pay for your product'),
+                                                    ),
+                                                    widget.isAdmin != 'admin'
+                                                        ? IconButton(
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .push(MaterialPageRoute(
+                                                                      builder:
+                                                                          (_) {
+                                                                return OrderScreen(
+                                                                    listproducts[
+                                                                        index]);
+                                                              }));
+                                                            },
+                                                            icon: Icon(
+                                                                Icons.payment))
+                                                        : Container(),
+                                                  ],
+                                                )
                                               : Container(),
                                           widget.isAdmin == 'admin'
-                                              ? IconButton(
-                                                  onPressed: () {
-                                                    setState(() {
-                                                      listproducts[index]
-                                                          .deleteProduct();
-                                                    });
+                                              ? Column(
+                                                  children: <Widget>[
+                                                    Container(
+                                                      child: Text('delete '),
+                                                    ),
+                                                    IconButton(
+                                                        onPressed: () {
+                                                          setState(() {
+                                                            listproducts[index]
+                                                                .deleteProduct();
+                                                          });
 
-                                                    Provider.of<ProductsProvider>(
-                                                            context,
-                                                            listen: false)
-                                                        .deleteProduct(
-                                                            listproducts[
-                                                                index]);
-                                                  },
-                                                  icon: Icon(Icons.delete))
+                                                          Provider.of<ProductsProvider>(
+                                                                  context,
+                                                                  listen: false)
+                                                              .deleteProduct(
+                                                                  listproducts[
+                                                                      index]);
+                                                        },
+                                                        icon:
+                                                            Icon(Icons.delete))
+                                                  ],
+                                                )
                                               : Container(),
                                           widget.isAdmin == 'admin'
-                                              ? IconButton(
-                                                  onPressed: (() {
-                                                    Navigator.of(context).push(
-                                                        MaterialPageRoute(
-                                                            builder: (_) {
-                                                      return UpdateProduct(
-                                                          listproducts[index]);
-                                                    }));
-                                                  }),
-                                                  icon: Icon(Icons.update))
+                                              ? Column(
+                                                  children: <Widget>[
+                                                    Container(
+                                                      child: Text('edit'),
+                                                    ),
+                                                    IconButton(
+                                                        onPressed: (() {
+                                                          Navigator.of(context)
+                                                              .push(
+                                                                  MaterialPageRoute(
+                                                                      builder:
+                                                                          (_) {
+                                                            return UpdateProduct(
+                                                                listproducts[
+                                                                    index]);
+                                                          }));
+                                                        }),
+                                                        icon: Icon(Icons.edit))
+                                                  ],
+                                                )
                                               : Container()
                                         ],
                                       ),

@@ -95,7 +95,7 @@ class _UpdateProductState extends State<UpdateProduct> {
           _description.trim(),
           url.trim());
       Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-        return ProductScreenadmin(widget.updatedproduct.cat, 'admin');
+        return ProductScreen(widget.updatedproduct.cat, 'admin');
       }));
     }
   }
