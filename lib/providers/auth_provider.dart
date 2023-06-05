@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_complete_guide/models/auth.dart';
 import 'package:flutter_complete_guide/screen/add_screen.dart';
+import 'package:flutter_complete_guide/screen/erorrMessage.dart';
 import 'package:flutter_complete_guide/screen/tab_bottom_admin.dart';
 
 class AuthProvdier with ChangeNotifier {
@@ -25,14 +26,17 @@ class AuthProvdier with ChangeNotifier {
 //String url, String id טענת כניסה : פעולה שמקבלת
 //Firebase טענת יציאה : פעולה שמעדכנת את תמונות המשתמש ב
   Future<void> updatePicture(String url, String id) async {
-    FirebaseFirestore.instance
-        .collection('url')
-        .doc(id)
-        .update({"url": url}).then((result) {
-      print("new user true");
-    }).catchError((onError) {
-      print(onError);
-    });
+    try {
+      FirebaseFirestore.instance
+          .collection('url')
+          .doc(id)
+          .update({"url": url}).then((result) {
+        print("new user true");
+      }).catchError((onError) {
+        print(onError);
+      });
+    } catch (erorr) {
+    }
   }
 
   var _isLoading = false;
@@ -43,32 +47,36 @@ class AuthProvdier with ChangeNotifier {
   //_Auths מהטבלה של המוצרים ולהוסיף אותם ל Firebaseטענת יציאה : פעולה שמטרתה לקלוט נתונים מה
 
   Future<void> fetch() async {
-    _Auths = [];
-    await FirebaseFirestore.instance.collection('users').get().then(
-      (QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach(
-          (doc) {
-            _Auths.add(
-              Auth(doc['email'], doc['username'], doc['phone'], doc.id,
-                  doc['kind'], doc['url']),
-            );
-          },
-        );
-      },
-    );
+    try {
+      _Auths = [];
+      await FirebaseFirestore.instance.collection('users').get().then(
+        (QuerySnapshot querySnapshot) {
+          querySnapshot.docs.forEach(
+            (doc) {
+              _Auths.add(
+                Auth(doc['email'], doc['username'], doc['phone'], doc.id,
+                    doc['kind'], doc['url']),
+              );
+            },
+          );
+        },
+      );
+    } catch (erorr) {}
   }
 
 //String uid, String username טענת כניסה : פעולה שמקבלת
 //Firebase טענת יציאה פעולה שממעדכנת את שם המשתמש של המשתמש ב
-  void updateUserName(String uid, String username) {
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .update({'username': username}).then((result) {
-      print("new USer true");
-    }).catchError((onError) {
-      print(onError);
-    });
+  Future<void> updateUserName(
+      String uid, String username, BuildContext context) async {
+    try {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .update({'username': username}).then((result) {
+        print("new USer true");
+      });
+    } catch (erorr) {
+    }
   }
 
 //String uid, String phone טענת כניסה : פעולה שמקבלת
@@ -80,7 +88,6 @@ class AuthProvdier with ChangeNotifier {
         .update({'phone': phone}).then((result) {
       print("new USer true");
     }).catchError((onError) {
-      print(onError);
     });
   }
 
