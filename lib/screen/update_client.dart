@@ -134,9 +134,20 @@ class _UpdateClientState extends State<UpdateClient> {
   File _imagepicker;
   // פעולה שלא מקבלת משתנים
 //טענת יציאה : פעולה שמטרתה לצלם
-  void _pickedimagecamera() async {
+  void _pickedImageCamera() async {
     final pickedimage =
         await ImagePicker().pickImage(source: ImageSource.camera);
+    if (pickedimage == null) {
+      return null;
+    }
+    setState(() {
+      _imagepicker = File(pickedimage.path);
+    });
+  }
+
+  void _pickedImageGallery() async {
+    final pickedimage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedimage == null) {
       return null;
     }
@@ -193,7 +204,39 @@ class _UpdateClientState extends State<UpdateClient> {
                             child: checkIfIconApear == 1
                                 ? IconButton(
                                     onPressed: () {
-                                      _pickedimagecamera();
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text('choose option'),
+                                              content: Text(
+                                                  'take picture from the gallery or take a photo with the camera'),
+                                              actions: <Widget>[
+                                                IconButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    icon: Icon(
+                                                        Icons.exit_to_app)),
+                                                ElevatedButton(
+                                                  child: Text('gallery'),
+                                                  onPressed: () {
+                                                    _pickedImageGallery();
+
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                                ElevatedButton(
+                                                  child: Text('camera '),
+                                                  onPressed: () {
+                                                    _pickedImageCamera();
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          });
                                     },
                                     icon: Icon(Icons.add),
                                   )
