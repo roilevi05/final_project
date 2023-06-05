@@ -112,7 +112,18 @@ class _UpdateProductState extends State<UpdateProduct> {
   File _imagepicker;
   // פעולה שלא מקבלת משתנים
 //טענת יציאה : פעולה שמטרתה להביא תמונה מהלרייה
-  void _pickedimagecamera() async {
+  void _pickedImageCamera() async {
+    final pickedimage =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+    if (pickedimage == null) {
+      return null;
+    }
+    setState(() {
+      _imagepicker = File(pickedimage.path);
+    });
+  }
+
+  void _pickedImageGallery() async {
     final pickedimage =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedimage == null) {
@@ -146,6 +157,7 @@ class _UpdateProductState extends State<UpdateProduct> {
   String kind = lst.first;
   @override
   int isAppear = 0;
+
   //BuildContext טענת כניסה:פעולה שמקבלת
 //טענת יציאה: פעולה שמטרתה לבנות מסך שמעדכן מוצרים
   Widget build(BuildContext context) {
@@ -177,8 +189,38 @@ class _UpdateProductState extends State<UpdateProduct> {
                         backgroundColor: isAppear == 1 ? Colors.black : null,
                         child: isAppear == 1
                             ? IconButton(
-                                onPressed: () async {
-                                  _pickedimagecamera();
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text('choose option'),
+                                          content: Text(
+                                              'take picture from the gallery or take a photo with the camera'),
+                                          actions: <Widget>[
+                                            IconButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                icon: Icon(Icons.exit_to_app)),
+                                            ElevatedButton(
+                                              child: Text('gallery'),
+                                              onPressed: () {
+                                                _pickedImageGallery();
+
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                            ElevatedButton(
+                                              child: Text('camera '),
+                                              onPressed: () {
+                                                _pickedImageCamera();
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      });
                                 },
                                 icon: Icon(Icons.add),
                               )
