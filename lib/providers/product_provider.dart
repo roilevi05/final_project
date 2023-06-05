@@ -6,6 +6,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_complete_guide/screen/erorrMessage.dart';
 import 'package:provider/provider.dart';
 
 import '../models/order.dart';
@@ -36,7 +38,7 @@ class ProductsProvider with ChangeNotifier {
                     double.parse(doc['price']),
                     doc['kind'],
                     doc['time'],
-                    doc.id,
+                    doc.id + '6',
                     doc['url'],
                     doc['description'],
                     doc['delete'],
@@ -54,10 +56,17 @@ class ProductsProvider with ChangeNotifier {
   String uid = '';
   //String name,String price, DateTime time,String kind,String picture,String description,String image טענת כניסה :פעולה שמקבלת
 // products בטבלה של  Firebase פעולה שמטרתה להוסיף נתונים ל
-  Future<void> addProductsData(String name, String price, DateTime time,
-      String kind, String picture, String description, String image) {
+  Future<Widget> addProductsData(
+      String name,
+      String price,
+      DateTime time,
+      String kind,
+      String picture,
+      String description,
+      String image,
+      BuildContext context) async {
     try {
-      FirebaseFirestore.instance.collection('products').add({
+      await FirebaseFirestore.instance.collection('products').add({
         'name': name,
         'price': price.toString(),
         'time': DateTime.now(),
@@ -68,12 +77,14 @@ class ProductsProvider with ChangeNotifier {
         'isUpdate': false
       }).then((DocumentReference doc) {});
       notifyListeners();
-    } catch (erorr) {}
+    } catch (erorr) {
+
+    }
   }
 
 // String id טענת כניסה : פעולה שמקבלת
 //Firebaseטענת יציאה : פעולה שמטרתה לעדכן את הסטטוס של המוצר מלא מעודכן למעודכן
-  Future<void> updateallTheDetails(String id) async {
+  Future<Widget> updateallTheDetails(String id) async {
     try {
       FirebaseFirestore.instance
           .collection('products')
@@ -83,7 +94,9 @@ class ProductsProvider with ChangeNotifier {
       }).catchError((onError) {
         print(onError);
       });
-    } catch (erorr) {}
+    } catch (erorr) {
+
+    }
   }
 
   var collection = FirebaseFirestore.instance.collection('products');
@@ -91,14 +104,17 @@ class ProductsProvider with ChangeNotifier {
   //Product product טענת כניסה : פעולה שמקבלת
 //Firebaseב trueטענת יציאה : פעולה שמטרתה לשנות את הסטטוס של האם המוצצר נמחק ל
   Future<void> deleteProduct(Product product) async {
-    FirebaseFirestore.instance
-        .collection('products')
-        .doc(product.id)
-        .update({"delete": true}).then((result) {
-      print("new USer true");
-    }).catchError((onError) {
-      print(onError);
-    });
+    try {
+      await FirebaseFirestore.instance
+          .collection('products')
+          .doc(product.id)
+          .update({"delete": true});
+      print("Product deleted successfully");
+    } catch (error) {
+
+
+      
+    }
   }
 
   //Product product טענת כניסה : פעולה שמקבלת
