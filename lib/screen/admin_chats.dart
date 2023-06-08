@@ -58,18 +58,40 @@ class _AdminChatState extends State<AdminChat> {
                 ElevatedButton(
                   child:
                       Text('enter the chat with :' + listuser[index].userName),
-                  onPressed: (() {
-                    Provider.of<chatProvider>(context, listen: false)
-                        .updateNewMessage(listuser[index].uid);
-                    Provider.of<chatProvider>(context, listen: false)
-                        .updateNewMessageProvider(listuser[index].uid);
-                    setState(() {
-                      changeBool(listuser[index].uid);
-                    });
+                  onPressed: (() async {
+                    String str =
+                        await Provider.of<chatProvider>(context, listen: false)
+                            .updateNewMessage(listuser[index].uid);
+                    if (str == '') {
+                      Provider.of<chatProvider>(context, listen: false)
+                          .updateNewMessageProvider(listuser[index].uid);
+                      setState(() {
+                        changeBool(listuser[index].uid);
+                      });
 
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-                      return AllChat(listuser[index].uid);
-                    }));
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (_) {
+                        return AllChat(listuser[index].uid);
+                      }));
+                    } else {
+                      return showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Error message'),
+                            content: Text(str),
+                            actions: <Widget>[
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
                   }),
                 )
               ])
