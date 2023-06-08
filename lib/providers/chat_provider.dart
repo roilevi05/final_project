@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/chat.dart';
-import 'package:flutter_complete_guide/screen/erorrMessage.dart';
 
 import '../screen/tab_bottom_admin.dart';
 
@@ -53,7 +52,7 @@ class chatProvider with ChangeNotifier {
 
 //String id טענת כניסה : פעולה שמקבלת
 //Firebase  טענת יציאה : פעולה שבודקת אם יש הודעה שלא נקראה של המשתמש ומעדכנת את הסטטוס אם נקרא או לא נקרא ל-נקרא ב
-  Future<void> updateNewMessage(String id) async {
+  Future<String> updateNewMessage(String id) async {
     try {
       for (chat i in chats) {
         if (!i.isRead && i.userId == id) {
@@ -63,7 +62,9 @@ class chatProvider with ChangeNotifier {
               .update({'isRead': true});
         }
       }
+      return '';
     } catch (erorr) {
+      return erorr.toString();
     }
   }
 
