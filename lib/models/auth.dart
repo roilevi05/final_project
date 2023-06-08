@@ -18,4 +18,12 @@ class Auth with ChangeNotifier {
     this.kind = kind;
     this.url = url;
   }
+  //String phone, String url, String userName טענת כניסה : פעולה שמקבלת
+  // טענת יציאה : לעדכן את פרטי המשתמש
+  void changeDetails(String phone, String url, String userName) {
+    this.userName = userName;
+    this.phone = phone;
+    this.url = url;
+    notifyListeners();
+  }
 }
