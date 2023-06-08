@@ -43,6 +43,77 @@ class _ProductScreenState extends State<ProductScreen> {
     }
   }
 
+  Future<Widget> getShowDialog(String str) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error message'),
+          content: Text(str),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+// טענת כניסה פעולה שמקבלת מוצר
+//טענת יציאה : פעולה שמחזירה את הכפתור שמאפשר לעבור למסך שמעדכן את המוצר
+  Widget getEdit(Product product) {
+    return Column(
+      children: <Widget>[
+        Container(
+          child: Text('edit'),
+        ),
+        IconButton(
+            onPressed: (() {
+              Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+                return UpdateProduct(product);
+              }));
+            }),
+            icon: Icon(Icons.edit))
+      ],
+    );
+  }
+
+//טענת כניסה : פעולה שמקבלת טקסט
+//Container טענת יציאה : פעולה שמחזירה
+  Widget getContainer(String text) {
+    return Container(
+      margin: const EdgeInsets.all(5.0),
+      padding: const EdgeInsets.all(5.0),
+      child: Text(text),
+    );
+  }
+
+// טענת כניסה:פעולה שלא מקבלת משתנים
+// טענת יציאה : הודעת שגיאה
+  Future<void> showErrorDialog() async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error message'),
+          content: Text('You encountered an error.'),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   final ScrollController _firstController = ScrollController();
   //String userid, String productid, List<FavoriteProduct> favorite טענת כניסה : פעולה שמקבלת
 //false ואם לא  trueאם נמצא  useridו productidטענת יציאה : פעולה שבודקת אם המוצר ברשימת המוצרים האהובים לפי ה
@@ -243,22 +314,9 @@ class _ProductScreenState extends State<ProductScreen> {
                                         MainAxisAlignment.spaceBetween,
                                     mainAxisSize: MainAxisSize.max,
                                     children: <Widget>[
-                                      Container(
-                                        child: Text(
-                                          listproducts[index].name,
-                                        ),
-                                        margin: const EdgeInsets.all(5.0),
-                                        padding: const EdgeInsets.all(5.0),
-                                      ),
-                                      Container(
-                                          margin: const EdgeInsets.all(5.0),
-                                          padding: const EdgeInsets.all(5.0),
-                                          child: Text(
-                                            "${listproducts[index].price}\$",
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                color: Colors.black),
-                                          )),
+                                      getContainer(listproducts[index].name),
+                                      getContainer(
+                                          "${listproducts[index].price}\$"),
                                       widget.isAdmin != 'admin'
                                           ? checkIfFavorite(
                                                   Provider.of<AuthProvdier>(
@@ -269,57 +327,75 @@ class _ProductScreenState extends State<ProductScreen> {
                                                   lstFavoriteProduct)
                                               ? IconButton(
                                                   icon: Icon(Icons.favorite),
-                                                  onPressed: () {
+                                                  onPressed: () async {
                                                     String id = Provider.of<
                                                                 AuthProvdier>(
                                                             context,
                                                             listen: false)
                                                         .getuid();
 
-                                                    Provider.of<FavoriteProvider>(
-                                                            context,
-                                                            listen: false)
+                                                    Future<
+                                                        String> str = Provider
+                                                            .of<FavoriteProvider>(
+                                                                context,
+                                                                listen: false)
                                                         .delete(
                                                             listproducts[index]
                                                                 .id,
                                                             id);
-                                                    Provider.of<FavoriteProvider>(
-                                                            context,
-                                                            listen: false)
-                                                        .deleteProvider(
-                                                            listproducts[index]
-                                                                .id,
-                                                            id);
-                                                    setState(() {
-                                                      lstFavoriteProduct = Provider
-                                                              .of<FavoriteProvider>(
-                                                                  context,
-                                                                  listen: false)
-                                                          .favorite;
-                                                    });
+                                                    String isdone = await str;
+                                                    print(isdone);
+                                                    if (isdone == '') {
+                                                      setState(() {
+                                                        Provider.of<FavoriteProvider>(
+                                                                context,
+                                                                listen: false)
+                                                            .deleteProvider(
+                                                                listproducts[
+                                                                        index]
+                                                                    .id,
+                                                                id);
+                                                        lstFavoriteProduct =
+                                                            Provider.of<FavoriteProvider>(
+                                                                    context,
+                                                                    listen:
+                                                                        false)
+                                                                .favorite;
+                                                      });
+                                                    } else {
+                                                      getShowDialog(isdone);
+                                                    }
                                                   })
                                               : IconButton(
                                                   icon: Icon(
                                                       Icons.favorite_border),
-                                                  onPressed: () {
+                                                  onPressed: () async {
                                                     String id = Provider.of<
                                                                 AuthProvdier>(
                                                             context,
                                                             listen: false)
                                                         .getuid();
-                                                    Provider.of<FavoriteProvider>(
-                                                            context,
-                                                            listen: false)
+
+                                                    String str = await Provider
+                                                            .of<FavoriteProvider>(
+                                                                context,
+                                                                listen: false)
                                                         .addFavorite(
                                                             id,
                                                             listproducts[index]
                                                                 .id);
-
-                                                    lstFavoriteProduct = Provider
-                                                            .of<FavoriteProvider>(
-                                                                context,
-                                                                listen: false)
-                                                        .favorite;
+                                                    if (str == '') {
+                                                      setState(() {
+                                                        lstFavoriteProduct =
+                                                            Provider.of<FavoriteProvider>(
+                                                                    context,
+                                                                    listen:
+                                                                        false)
+                                                                .favorite;
+                                                      });
+                                                    } else {
+                                                      getShowDialog(str);
+                                                    }
 
                                                     setState(() {
                                                       islove = !islove;
@@ -393,18 +469,27 @@ class _ProductScreenState extends State<ProductScreen> {
                                                       child: Text('delete '),
                                                     ),
                                                     IconButton(
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            listproducts[index]
-                                                                .deleteProduct();
-                                                          });
-
-                                                          Provider.of<ProductsProvider>(
-                                                                  context,
-                                                                  listen: false)
-                                                              .deleteProduct(
-                                                                  listproducts[
-                                                                      index]);
+                                                        onPressed: () async {
+                                                          Future<String>
+                                                              isdone =
+                                                              Provider.of<ProductsProvider>(
+                                                                      context,
+                                                                      listen:
+                                                                          false)
+                                                                  .deleteProduct(
+                                                            listproducts[index],
+                                                          );
+                                                          String str =
+                                                              await isdone;
+                                                          if (str == '') {
+                                                            setState(() {
+                                                              listproducts[
+                                                                      index]
+                                                                  .deleteProduct();
+                                                            });
+                                                          } else {
+                                                            getShowDialog(str);
+                                                          }
                                                         },
                                                         icon:
                                                             Icon(Icons.delete))
@@ -412,27 +497,8 @@ class _ProductScreenState extends State<ProductScreen> {
                                                 )
                                               : Container(),
                                           widget.isAdmin == 'admin'
-                                              ? Column(
-                                                  children: <Widget>[
-                                                    Container(
-                                                      child: Text('edit'),
-                                                    ),
-                                                    IconButton(
-                                                        onPressed: (() {
-                                                          Navigator.of(context)
-                                                              .push(
-                                                                  MaterialPageRoute(
-                                                                      builder:
-                                                                          (_) {
-                                                            return UpdateProduct(
-                                                                listproducts[
-                                                                    index]);
-                                                          }));
-                                                        }),
-                                                        icon: Icon(Icons.edit))
-                                                  ],
-                                                )
-                                              : Container()
+                                              ? getEdit(listproducts[index])
+                                              : Container(),
                                         ],
                                       ),
                                     )

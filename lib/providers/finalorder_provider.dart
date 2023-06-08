@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/final_order.dart';
 import 'package:flutter_complete_guide/models/order.dart';
+import 'package:flutter_complete_guide/models/product.dart';
+
+import '../screen/tab_bottom_admin.dart';
 
 class FinalOrderProvider with ChangeNotifier {
   List<finalOrder> _allOrders = [];
@@ -19,18 +22,20 @@ class FinalOrderProvider with ChangeNotifier {
   //_allOrders מהטבלה של המוצרים ולהוסיף אותם ל Firebaseטענת יציאה : פעולה שמטרתה לקלוט נתונים מה
 
   Future<void> fetchOrders() async {
-    _allOrders = [];
-    await FirebaseFirestore.instance.collection('order').get().then(
-      (QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach(
-          (doc) {
-            _allOrders.add(
-              finalOrder(doc['userid'], doc['time'], doc['issold'], doc.id),
-            );
-          },
-        );
-      },
-    );
+    try {
+      _allOrders = [];
+      await FirebaseFirestore.instance.collection('order').get().then(
+        (QuerySnapshot querySnapshot) {
+          querySnapshot.docs.forEach(
+            (doc) {
+              _allOrders.add(
+                finalOrder(doc['userid'], doc['time'], doc['issold'], doc.id),
+              );
+            },
+          );
+        },
+      );
+    } catch (erorr) {}
   }
 
   String uid;
@@ -38,11 +43,11 @@ class FinalOrderProvider with ChangeNotifier {
   //String userId טענת כניסה :פעולה שמקבלת
 // order בטבלה של  Firebase פעולה שמטרתה להוסיף נתונים ל
 
-  Future<void> addOrderData(String userId) {
+  Future<String> addOrderData(String userId) async {
     FirebaseFirestore.instance.collection('order').add({
       'userid': userId,
       'issold': 'not pay',
-      'time': DateTime.now()
+      'time': DateTime.now(),
     }).then((DocumentReference doc) {
       _allOrders.add(finalOrder(userId, Timestamp.now(), 'not pay', doc.id));
       uid = doc.id;
@@ -60,29 +65,30 @@ class FinalOrderProvider with ChangeNotifier {
 
 //String uid טענת כניסה : פעולה שמקבלת
 // Firebaseשל ההזמנה מה idטענת יציאה: פעולה שמטרתה לקבל את ה
-  Future<void> returnId(String uid) async {
-    {
-      var getCollection = await collection.get();
-      var getId = getCollection.docs
-          .firstWhere((element) =>
-              element['userid'] == uid && element['issold'] == 'not pay')
-          .id;
-      this.orderId = getId.toString();
-      notifyListeners();
-    }
+  Future<String> returnId(String uid) async {
+    var getCollection = await collection.get();
+    var getId = getCollection.docs
+        .firstWhere((element) =>
+            element['userid'] == uid && element['issold'] == 'not pay')
+        .id;
+    this.orderId = getId.toString();
+    notifyListeners();
   }
 
 //String id, String state טענת כניסה : פעולה שמקבלת
 //Firebase טענת יציאה : פעולה שמטרתה לבדוק אם צב המוצר ולשנות אותו בהתאם לקלט ב
-  Future<void> changeState(String id, String state) async {
-    FirebaseFirestore.instance
-        .collection('order')
-        .doc(id)
-        .update({"issold": state}).then((result) {
-      print("new USer true");
-    }).catchError((onError) {
-      print(onError);
-    });
+  Future<String> changeState(String id, String state) async {
+    try {
+      FirebaseFirestore.instance
+          .collection('order')
+          .doc(id)
+          .update({"issold": state}).then((result) {
+        print("new USer true");
+      });
+      return '';
+    } catch (erorr) {
+      return erorr.toString();
+    }
   }
 
 //String id, String state טענת כניסה : פעולה שמקבלת

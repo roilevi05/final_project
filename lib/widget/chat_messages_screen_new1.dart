@@ -83,7 +83,7 @@ class ChatMessages extends StatelessWidget {
                 );
               }
             } else {
-              if (nextUserIsSame) {
+              if (!nextUserIsSame) {
                 return MessageBubble.next(
                   message: chatMessage['text'],
                   isMe: auth == currentMessageUserId,

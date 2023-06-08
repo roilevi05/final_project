@@ -236,39 +236,92 @@ class _SearchScreenState extends State<SearchScreen> {
                                     lstFavorite)
                                 ? IconButton(
                                     icon: Icon(Icons.favorite),
-                                    onPressed: () {
+                                    onPressed: () async {
                                       String id = Provider.of<AuthProvdier>(
                                               context,
                                               listen: false)
                                           .getuid();
 
-                                      Provider.of<FavoriteProvider>(context,
-                                              listen: false)
-                                          .delete(listproducts[index].id, id);
-                                      Provider.of<FavoriteProvider>(context,
-                                              listen: false)
-                                          .deleteProvider(
-                                              listproducts[index].id, id);
+                                      String str =
+                                          await Provider.of<FavoriteProvider>(
+                                                  context,
+                                                  listen: false)
+                                              .delete(
+                                                  listproducts[index].id, id);
+                                      if (str == '') {
+                                        Provider.of<FavoriteProvider>(context,
+                                                listen: false)
+                                            .deleteProvider(
+                                                listproducts[index].id, id);
 
-                                      setState(() {
-                                        lstFavorite =
-                                            Provider.of<FavoriteProvider>(
-                                                    context,
-                                                    listen: false)
-                                                .favorite;
-                                      });
+                                        setState(() {
+                                          lstFavorite =
+                                              Provider.of<FavoriteProvider>(
+                                                      context,
+                                                      listen: false)
+                                                  .favorite;
+                                        });
+                                      } else {
+                                        return showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text('Error message'),
+                                              content: Text(str),
+                                              actions: <Widget>[
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: Text('OK'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
                                     })
                                 : IconButton(
                                     icon: Icon(Icons.favorite_border),
-                                    onPressed: () {
+                                    onPressed: () async {
                                       String id = Provider.of<AuthProvdier>(
                                               context,
                                               listen: false)
                                           .getuid();
-                                      Provider.of<FavoriteProvider>(context,
-                                              listen: false)
-                                          .addFavorite(
-                                              id, listproducts[index].id);
+
+                                      String str =
+                                          await Provider.of<FavoriteProvider>(
+                                                  context,
+                                                  listen: false)
+                                              .addFavorite(
+                                                  id, listproducts[index].id);
+                                      if (str == '') {
+                                        setState(() {
+                                          lstFavorite =
+                                              Provider.of<FavoriteProvider>(
+                                                      context,
+                                                      listen: false)
+                                                  .favorite;
+                                        });
+                                      } else {
+                                        return showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text('Error message'),
+                                              content: Text(str),
+                                              actions: <Widget>[
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: Text('OK'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
                                     }),
                           ],
                         )

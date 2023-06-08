@@ -178,21 +178,45 @@ class _CartState extends State<Cart> {
                               width: 50,
                             ),
                             IconButton(
-                                onPressed: () {
-                                  Provider.of<productInOrderProvider>(context,
-                                          listen: false)
-                                      .delete1(list[index]);
-                                  Provider.of<productInOrderProvider>(context,
-                                          listen: false)
-                                      .delete(list[index]);
-                                  setState(() {
-                                    lst = Provider.of<productInOrderProvider>(
-                                            context,
+                                onPressed: () async {
+                                  String str =
+                                      await Provider.of<productInOrderProvider>(
+                                              context,
+                                              listen: false)
+                                          .delete1(list[index], context);
+                                  print(str.toString());
+
+                                  if (str == '') {
+                                    Provider.of<productInOrderProvider>(context,
                                             listen: false)
-                                        .allProductInOrders;
-                                    list = [];
-                                    getTheListThatNotPaid(uid, lst2, lst);
-                                  });
+                                        .delete(list[index]);
+                                    setState(() {
+                                      lst = Provider.of<productInOrderProvider>(
+                                              context,
+                                              listen: false)
+                                          .allProductInOrders;
+                                      list = [];
+                                      getTheListThatNotPaid(uid, lst2, lst);
+                                    });
+                                  } else {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text('Error message'),
+                                          content: Text(str),
+                                          actions: <Widget>[
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: Text('OK'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  }
                                 },
                                 icon: Icon(Icons.delete))
                           ],

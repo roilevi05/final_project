@@ -8,9 +8,11 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_complete_guide/models/auth.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 import 'package:flutter_complete_guide/providers/auth_provider.dart';
+import 'package:flutter_complete_guide/screen/tab_bottom_admin.dart';
 import 'package:flutter_complete_guide/screen/two_screen_admin.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 import '../providers/product_provider.dart';
 import '../widget/picture_photo.dart';
@@ -43,8 +45,9 @@ class _UpdateProductState extends State<UpdateProduct> {
   final _formKey = GlobalKey<FormState>();
   //String id טענת כניסה : פעולה שמקבלת
 //טענת יציאה :  פעולה שמטרתה לעדכן את פרטי המוצר  לפי הערכים שהקלדנו
-
-  Future<void> _trySubmitAllDetails(String id) async {
+  bool _isloading = false;
+  Future<void> _trySubmitAllDetails(
+      String id, BuildContext context, Product product) async {
     final isValid = _formKey.currentState.validate();
     FocusScope.of(context).unfocus();
 
@@ -84,19 +87,65 @@ class _UpdateProductState extends State<UpdateProduct> {
 
       final url = await snapshot.ref.getDownloadURL();
 
-      Provider.of<ProductsProvider>(context, listen: false)
-          .updateallTheDetails(id);
-      Provider.of<ProductsProvider>(context, listen: false).addProductsData(
-          _name.trim(),
-          _price.trim(),
-          DateTime.now(),
-          kind.trim(),
-          '',
-          _description.trim(),
-          url.trim());
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-        return ProductScreen(widget.updatedproduct.cat, 'admin');
-      }));
+      String str = await Provider.of<ProductsProvider>(context, listen: false)
+          .updateallTheDetails(
+        id,
+      );
+      if (str == '') {
+        String str1 =
+            await Provider.of<ProductsProvider>(context, listen: false)
+                .addProductsData(_name.trim(), _price.trim(), DateTime.now(),
+                    kind.trim(), '', _description.trim(), url.trim(), context)
+                .then((value) {
+          setState(() {
+            _isloading = false;
+          });
+        });
+        if (str1 == null) {
+          setState(() {
+            product.updateProduct();
+          });
+          Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+            return TabBottomAdmin('admin');
+          }));
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Error message'),
+                content: Text(str1.toString()),
+                actions: <Widget>[
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error message'),
+              content: Text(str.toString()),
+              actions: <Widget>[
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
     }
   }
 
@@ -112,7 +161,18 @@ class _UpdateProductState extends State<UpdateProduct> {
   File _imagepicker;
   // פעולה שלא מקבלת משתנים
 //טענת יציאה : פעולה שמטרתה להביא תמונה מהלרייה
-  void _pickedimagecamera() async {
+  void _pickedImageCamera() async {
+    final pickedimage =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+    if (pickedimage == null) {
+      return null;
+    }
+    setState(() {
+      _imagepicker = File(pickedimage.path);
+    });
+  }
+
+  void _pickedImageGallery() async {
     final pickedimage =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedimage == null) {
@@ -146,132 +206,174 @@ class _UpdateProductState extends State<UpdateProduct> {
   String kind = lst.first;
   @override
   int isAppear = 0;
+
   //BuildContext טענת כניסה:פעולה שמקבלת
 //טענת יציאה: פעולה שמטרתה לבנות מסך שמעדכן מוצרים
   Widget build(BuildContext context) {
+    print('yhty');
     return Scaffold(
       appBar: AppBar(title: Text('update client details')),
-      body: SingleChildScrollView(
-          child: Form(
-              key: _formKey,
-              child: Column(
-                children: <Widget>[
-                  Container(
-                      child: MouseRegion(
-                    onHover: (event) {
-                      setState(() {
-                        isAppear = 1;
-                      });
-                    },
-                    onExit: (event) {
-                      setState(() {
-                        isAppear = 0;
-                      });
-                    },
-                    onEnter: (event) {
-                      setState(() {
-                        isAppear = 1;
-                      });
-                    },
-                    child: CircleAvatar(
-                        backgroundColor: isAppear == 1 ? Colors.black : null,
-                        child: isAppear == 1
-                            ? IconButton(
-                                onPressed: () async {
-                                  _pickedimagecamera();
-                                },
-                                icon: Icon(Icons.add),
-                              )
-                            : Container(),
-                        backgroundImage: _imagepicker == null
-                            ? NetworkImage(widget.updatedproduct.picture)
-                            : null,
-                        radius: 40,
-                        foregroundImage: _imagepicker != null
-                            ? FileImage(_imagepicker)
-                            : null),
-                  )),
-                  Container(
-                    child: Text(
-                        'press on the circle in order to change your photo '),
-                  ),
-                  textfield(
-                    'priveous : ' + widget.updatedproduct.name,
-                    (value) {
-                      if (value.isEmpty) {
-                        return 'Please enter a valid name.';
-                      }
-                      return null;
-                    },
-                    'name',
-                    (value) {
-                      setState(() {
-                        _name = value;
-                      });
-                    },
-                  ),
-                  textfield(
-                    'priveous : ' + widget.updatedproduct.description,
-                    (value) {
-                      if (value.isEmpty) {
-                        return 'Please enter a valid description.';
-                      }
-                      return null;
-                    },
-                    'description',
-                    (value) {
-                      setState(() {
-                        _description = value;
-                      });
-                    },
-                  ),
-                  textfield(
-                    'priveous : ' + widget.updatedproduct.price.toString(),
-                    (value) {
-                      if (!isNumeric(value.toString()) && value.isEmpty) {
-                        return 'Please enter a valid price.';
-                      }
-                      if (double.parse(value.toString()) < 0) {
-                        return 'please enter a valid price';
-                      }
-                      return null;
-                    },
-                    'price',
-                    (value) {
-                      setState(() {
-                        _price = value;
-                      });
-                    },
-                  ),
-                  DropdownButton<String>(
-                    value: kind,
-                    icon: const Icon(Icons.arrow_downward),
-                    elevation: 16,
-                    style: const TextStyle(color: Colors.deepPurple),
-                    underline: Container(
-                      height: 2,
-                      color: Colors.deepPurpleAccent,
-                    ),
-                    onChanged: (String value) {
-                      // This is called when the user selects an item.
-                      setState(() {
-                        kind = value;
-                      });
-                    },
-                    items: lst.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-                  ElevatedButton(
-                      onPressed: (() {
-                        _trySubmitAllDetails(widget.updatedproduct.id);
-                      }),
-                      child: Text('update details')),
-                ],
-              ))),
+      body: _isloading
+          ? CircularProgressIndicator()
+          : SingleChildScrollView(
+              child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                          child: MouseRegion(
+                        onHover: (event) {
+                          setState(() {
+                            isAppear = 1;
+                          });
+                        },
+                        onExit: (event) {
+                          setState(() {
+                            isAppear = 0;
+                          });
+                        },
+                        onEnter: (event) {
+                          setState(() {
+                            isAppear = 1;
+                          });
+                        },
+                        child: CircleAvatar(
+                            backgroundColor:
+                                isAppear == 1 ? Colors.black : null,
+                            child: isAppear == 1
+                                ? IconButton(
+                                    onPressed: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text('choose option'),
+                                              content: Text(
+                                                  'take picture from the gallery or take a photo with the camera'),
+                                              actions: <Widget>[
+                                                IconButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    icon: Icon(
+                                                        Icons.exit_to_app)),
+                                                ElevatedButton(
+                                                  child: Text('gallery'),
+                                                  onPressed: () {
+                                                    _pickedImageGallery();
+
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                                ElevatedButton(
+                                                  child: Text('camera '),
+                                                  onPressed: () {
+                                                    _pickedImageCamera();
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                ),
+                                              ],
+                                            );
+                                          });
+                                    },
+                                    icon: Icon(Icons.add),
+                                  )
+                                : Container(),
+                            backgroundImage: _imagepicker == null
+                                ? NetworkImage(widget.updatedproduct.picture)
+                                : null,
+                            radius: 40,
+                            foregroundImage: _imagepicker != null
+                                ? FileImage(_imagepicker)
+                                : null),
+                      )),
+                      Container(
+                        child: Text(
+                            'press on the circle in order to change your photo '),
+                      ),
+                      textfield(
+                        'priveous : ' + widget.updatedproduct.name,
+                        (value) {
+                          if (value.isEmpty) {
+                            return 'Please enter a valid name.';
+                          }
+                          return null;
+                        },
+                        'name',
+                        (value) {
+                          setState(() {
+                            _name = value;
+                          });
+                        },
+                      ),
+                      textfield(
+                        'priveous : ' + widget.updatedproduct.description,
+                        (value) {
+                          if (value.isEmpty) {
+                            return 'Please enter a valid description.';
+                          }
+                          return null;
+                        },
+                        'description',
+                        (value) {
+                          setState(() {
+                            _description = value;
+                          });
+                        },
+                      ),
+                      textfield(
+                        'priveous : ' + widget.updatedproduct.price.toString(),
+                        (value) {
+                          if (!isNumeric(value.toString()) && value.isEmpty) {
+                            return 'Please enter a valid price.';
+                          }
+                          if (double.parse(value.toString()) < 0) {
+                            return 'please enter a valid price';
+                          }
+                          return null;
+                        },
+                        'price',
+                        (value) {
+                          setState(() {
+                            _price = value;
+                          });
+                        },
+                      ),
+                      DropdownButton<String>(
+                        value: kind,
+                        icon: const Icon(Icons.arrow_downward),
+                        elevation: 16,
+                        style: const TextStyle(color: Colors.deepPurple),
+                        underline: Container(
+                          height: 2,
+                          color: Colors.deepPurpleAccent,
+                        ),
+                        onChanged: (String value) {
+                          // This is called when the user selects an item.
+                          setState(() {
+                            kind = value;
+                          });
+                        },
+                        items:
+                            lst.map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                      ElevatedButton(
+                          onPressed: (() {
+                            setState(() {
+                              _isloading = true;
+                            });
+                            _trySubmitAllDetails(widget.updatedproduct.id,
+                                context, widget.updatedproduct);
+                          }),
+                          child: Text('update details')),
+                    ],
+                  ))),
     );
   }
 }

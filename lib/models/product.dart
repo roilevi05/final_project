@@ -31,7 +31,12 @@ class Product with ChangeNotifier {
   //טענת כניסה : הפעולה לא מקבלת משתנים
   // טענת יציאה : הפעולה משנה את הסטטוס של הוצר לנמחק
   void deleteProduct() {
-    this.delete = true;
+    this.delete = !delete;
+    notifyListeners();
+  }
+
+  void updateProduct() {
+    this.isUpdated = !isUpdated;
     notifyListeners();
   }
 }

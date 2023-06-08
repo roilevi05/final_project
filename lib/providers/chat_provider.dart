@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/chat.dart';
+
+import '../screen/tab_bottom_admin.dart';
 
 class chatProvider with ChangeNotifier {
   List<chat> _chats = [];
@@ -14,22 +17,24 @@ class chatProvider with ChangeNotifier {
   //_chats מהטבלה של המוצרים ולהוסיף אותם ל Firebaseטענת יציאה : פעולה שמטרתה לקלוט נתונים מה
 
   Future<void> fetchChat() async {
-    _chats = [];
-    await FirebaseFirestore.instance.collection('chat').get().then(
-      (QuerySnapshot querySnapshot) {
-        querySnapshot.docs.forEach(
-          (doc) {
-            print(
-              doc['userId'],
-            );
-            _chats.add(
-              chat(doc['createAt'], doc['text'], doc['url'], doc['userId'],
-                  doc['username'], doc['isRead'], doc.id),
-            );
-          },
-        );
-      },
-    );
+    try {
+      _chats = [];
+      await FirebaseFirestore.instance.collection('chat').get().then(
+        (QuerySnapshot querySnapshot) {
+          querySnapshot.docs.forEach(
+            (doc) {
+              print(
+                doc['userId'],
+              );
+              _chats.add(
+                chat(doc['createAt'], doc['text'], doc['url'], doc['userId'],
+                    doc['username'], doc['isRead'], doc.id),
+              );
+            },
+          );
+        },
+      );
+    } catch (erorr) {}
   }
 
 //String id טענת כניסה : פעולה שמקבלת
@@ -47,20 +52,25 @@ class chatProvider with ChangeNotifier {
 
 //String id טענת כניסה : פעולה שמקבלת
 //Firebase  טענת יציאה : פעולה שבודקת אם יש הודעה שלא נקראה של המשתמש ומעדכנת את הסטטוס אם נקרא או לא נקרא ל-נקרא ב
-  Future<void> updateNewMessage(String id) {
-    for (chat i in chats) {
-      if (!i.isRead && i.userId == id) {
-        FirebaseFirestore.instance
-            .collection('chat')
-            .doc(i.id)
-            .update({'isRead': true});
+  Future<String> updateNewMessage(String id) async {
+    try {
+      for (chat i in chats) {
+        if (!i.isRead && i.userId == id) {
+          FirebaseFirestore.instance
+              .collection('chat')
+              .doc(i.id)
+              .update({'isRead': true});
+        }
       }
+      return '';
+    } catch (erorr) {
+      return erorr.toString();
     }
   }
 
 //String id טענת כניסה : פעולה שמקבלת
 //Provider טענת יציאה : פעולה שבודקת אם יש הודעה שלא נקראה של המשתמש ומעדכנת את הסטטוס אם נקרא או לא נקרא ל-נקרא ב
-  Future<void> updateNewMessageProvider(String id) {
+  void updateNewMessageProvider(String id) {
     for (chat i in chats) {
       if (!i.isRead && i.userId == id) {
         i.changeBoolOfIsRead();

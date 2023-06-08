@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/main.dart';
 import 'package:flutter_complete_guide/screen/two_screen_admin.dart';
 
-class OptionScreenAdmin extends StatelessWidget {
+class OptionScreen extends StatelessWidget {
   final String isAdmin;
-  OptionScreenAdmin(@required this.isAdmin);
+  OptionScreen(@required this.isAdmin);
 
   int i = 0;
   //BuildContext ctx, String kind טענת כניסה : פעולה שמקבלת

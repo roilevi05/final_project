@@ -71,8 +71,29 @@ class _TabBottomAdminState extends State<TabBottomAdmin> {
           });
         });
       });
-    } catch (e) {
-      print(e);
+    } catch (erorr) {
+      return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('erorr message'),
+            content: Text(
+              erorr.toString(),
+            ),
+            actions: <Widget>[
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+                    return TabBottomAdmin(isAdmin);
+                  }));
+                },
+                child: Text('ok'),
+              ),
+            ],
+          );
+        },
+      );
     }
     super.didChangeDependencies();
   }
@@ -93,7 +114,7 @@ class _TabBottomAdminState extends State<TabBottomAdmin> {
 // טענת יציאה : פעולה שמחזירה רשימה של כל מסך בהתאם לסוג המשתמש מנהל או לא ובהתאם לסוג המסך
   Widget getlist() {
     return _selectedIndex == 0 && isAdmin == 'admin'
-        ? OptionScreenAdmin('admin')
+        ? OptionScreen('admin')
         : _selectedIndex == 1 && isAdmin == 'admin'
             ? NewProduct()
             : _selectedIndex == 2 && isAdmin == 'admin'
@@ -103,7 +124,7 @@ class _TabBottomAdminState extends State<TabBottomAdmin> {
                     : _selectedIndex == 4 && isAdmin == 'admin'
                         ? AdminChat()
                         : _selectedIndex == 0
-                            ? OptionScreenAdmin('')
+                            ? OptionScreen('')
                             : _selectedIndex == 1
                                 ? FavoriteScreen()
                                 : _selectedIndex == 2

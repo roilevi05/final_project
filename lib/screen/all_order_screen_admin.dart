@@ -110,17 +110,38 @@ class _AllOrderState extends State<AllOrder> {
                 listoforders[index].isSold == 'pay'
                     ? isAdmin == 'admin'
                         ? ElevatedButton(
-                            onPressed: () {
-                              Provider.of<FinalOrderProvider>(context,
-                                      listen: false)
-                                  .changeState(
-                                      listoforders[index].orderid, 'supak');
-                              setState(() {
-                                Provider.of<FinalOrderProvider>(context,
-                                        listen: false)
-                                    .changeStateProvider(
-                                        listoforders[index].orderid, 'supak');
-                              });
+                            onPressed: () async {
+                              String str =
+                                  await Provider.of<FinalOrderProvider>(context,
+                                          listen: false)
+                                      .changeState(
+                                          listoforders[index].orderid, 'supak');
+                              if (str == '') {
+                                setState(() {
+                                  Provider.of<FinalOrderProvider>(context,
+                                          listen: false)
+                                      .changeStateProvider(
+                                          listoforders[index].orderid, 'supak');
+                                });
+                              } else {
+                                return showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Error message'),
+                                      content: Text(str),
+                                      actions: <Widget>[
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text('OK'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
                             },
                             child: Text('give the order'))
                         : Container(

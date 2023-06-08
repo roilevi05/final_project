@@ -53,7 +53,7 @@ class _PayScreenState extends State<PayScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   // טענת כניסה : הפעולה לא מקבלת משתנים
 //טענת יציאה :פעולה שבודקת אם השדות שמילאנו אם הם תקינים וממשנה את הסטטוס של ההזמנה מלא שולם לשולם
-  void _trySubmit() {
+  Future<void> _trySubmit() async {
     final isValid = _formKey.currentState.validate();
     FocusScope.of(context).unfocus();
 
@@ -87,13 +87,33 @@ class _PayScreenState extends State<PayScreen> {
       _formKey.currentState.save();
       String uid = Provider.of<AuthProvdier>(context, listen: false).getuid();
 
-      Provider.of<FinalOrderProvider>(context, listen: false)
+      String str = await Provider.of<FinalOrderProvider>(context, listen: false)
           .changeState(widget.orderid, 'pay');
-      Provider.of<FinalOrderProvider>(context, listen: false)
-          .changeStateProvider(widget.orderid, 'supak');
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-        return AfterPay();
-      }));
+      if (str == '') {
+        Provider.of<FinalOrderProvider>(context, listen: false)
+            .changeStateProvider(widget.orderid, 'pay');
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+          return AfterPay();
+        }));
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error message'),
+              content: Text(str),
+              actions: <Widget>[
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
     }
   }
 

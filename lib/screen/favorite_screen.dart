@@ -102,18 +102,39 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                   ],
                 ),
                 ElevatedButton.icon(
-                    onPressed: (() {
-                      Provider.of<FavoriteProvider>(context, listen: false)
+                    onPressed: (() async {
+                      String str = await Provider.of<FavoriteProvider>(context,
+                              listen: false)
                           .delete1(lstfavorite[index].id);
-                      Provider.of<FavoriteProvider>(context, listen: false)
-                          .deleteProvider1(lstfavorite[index].id);
+                      if (str == '') {
+                        Provider.of<FavoriteProvider>(context, listen: false)
+                            .deleteProvider1(lstfavorite[index].id);
 
-                      setState(() {
-                        lstfavorite = Provider.of<FavoriteProvider>(context,
-                                listen: false)
-                            .favorite;
-                        getListOfFavoriteByUserId(uid, lstfavorite);
-                      });
+                        setState(() {
+                          lstfavorite = Provider.of<FavoriteProvider>(context,
+                                  listen: false)
+                              .favorite;
+                          getListOfFavoriteByUserId(uid, lstfavorite);
+                        });
+                      } else {
+                        return showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text('Error message'),
+                              content: Text(str),
+                              actions: <Widget>[
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
                     }),
                     icon: Icon(Icons.favorite),
                     label: Text('cancel love'))

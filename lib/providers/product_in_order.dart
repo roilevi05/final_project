@@ -3,7 +3,9 @@ import 'dart:ffi';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/auth.dart';
 import 'package:flutter_complete_guide/models/order.dart';
 import 'package:flutter_complete_guide/models/order.dart';
@@ -13,6 +15,7 @@ import 'package:provider/provider.dart';
 
 import '../models/order.dart';
 import '../models/product.dart';
+import '../screen/tab_bottom_admin.dart';
 
 class productInOrderProvider with ChangeNotifier {
   List<order> _allProductInOrders = [];
@@ -46,16 +49,14 @@ class productInOrderProvider with ChangeNotifier {
   //Product product, String uid טענת כניסה :פעולה שמקבלת
 // orderproduct בטבלה של  Firebase פעולה שמטרתה להוסיף נתונים ל
 
-  Future<void> addOrder(Product product, String uid) async {
-    try {
-      FirebaseFirestore.instance.collection('orderproduct').doc().set({
-        'productid': product.id,
-        'date': DateTime.now(),
-        'amount': (1).toString(),
-        'orderid': uid
-      }).then((value) => null);
-      notifyListeners();
-    } catch (erorr) {}
+  Future<String> addOrder(
+      Product product, String uid, BuildContext context) async {
+    FirebaseFirestore.instance.collection('orderproduct').add({
+      'productid': product.id,
+      'date': DateTime.now(),
+      'amount': (1).toString(),
+      'orderid': uid,
+    });
   }
 
   var collection1 = FirebaseFirestore.instance.collection('orderproduct');
@@ -63,7 +64,7 @@ class productInOrderProvider with ChangeNotifier {
   //order order1 טענת כניסה :פעולה שמקבלת
 //Firebaseטענת יציאה: פעולה שמטרתה למחוק את הפריטים בעל התכונות שקיבלנו ב
 
-  Future<void> delete1(order order1) async {
+  Future<String> delete1(order order1, BuildContext context) async {
     try {
       for (order i in _allProductInOrders) {
         if (i == order1) {
@@ -73,8 +74,10 @@ class productInOrderProvider with ChangeNotifier {
               .delete();
         }
       }
-      notifyListeners();
-    } catch (erorr) {}
+      return '';
+    } catch (erorr) {
+      return erorr.toString();
+    }
   }
   //order order1 טענת כניסה :פעולה שמקבלת
 //Providerטענת יציאה: פעולה שמטרתה למחוק את הפריטים בעל התכונות שקיבלנו ב
