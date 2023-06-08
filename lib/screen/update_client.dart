@@ -28,27 +28,42 @@ class _UpdateClientState extends State<UpdateClient> {
   final _formKey = GlobalKey<FormState>();
   //String uid טענת כניסה : פעולה שמקבלת
 //טענת יציאה :  פעולה שמטרתה לעדכן את פרטי המשתמש לפי הערכים שהקלדנו
-  Future<void> _trySubmitUserName(String uid) async {
+  Future<void> _trySubmitUserName(
+      String uid, BuildContext context, Auth user) async {
     final isValid = _formKey.currentState.validate();
     FocusScope.of(context).unfocus();
 
     if (isValid) {
       _formKey.currentState.save();
-      Provider.of<AuthProvdier>(context, listen: false)
-          .updateUserName(uid, _username.trim());
+      String str = await Provider.of<AuthProvdier>(context, listen: false)
+          .updateUserName(uid, _username.trim(), context);
+      if (str != '') {
+        await showErrorDialog();
+      } else {
+        setState(() {
+          user.changeDetails(user.phone, user.url, _username);
+        });
+      }
     }
   }
   //String uid טענת כניסה : פעולה שמקבלת
 //טענת יציאה :  פעולה שמטרתה לעדכן את פרטי המשתמש לפי הערכים שהקלדנו
 
-  Future<void> _trySubmitPhone(String uid) async {
+  Future<void> _trySubmitPhone(String uid, Auth user) async {
     final isValid = _formKey.currentState.validate();
     FocusScope.of(context).unfocus();
 
     if (isValid) {
       _formKey.currentState.save();
-      Provider.of<AuthProvdier>(context, listen: false)
+      String str = await Provider.of<AuthProvdier>(context, listen: false)
           .updatePhone(uid, _phone.trim());
+      if (str != '') {
+        await showErrorDialog();
+      } else {
+        setState(() {
+          user.changeDetails(_phone, user.url, user.userName);
+        });
+      }
     }
   }
 
@@ -93,12 +108,32 @@ class _UpdateClientState extends State<UpdateClient> {
     );
   }
 
+  Future<void> showErrorDialog() async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Error message'),
+          content: Text('You encountered an error.'),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   var _phone = '';
 
 //String id טענת כניסה : פעולה שמקבלת
 // טענת יציאה : פעולה שמטרתה לעדכן את התמונה לפי הערכים שהקלדנו
 
-  Future<void> _trySubmitPicture(String id) async {
+  Future<void> _trySubmitPicture(String id, Auth user) async {
     final isValid = _formKey.currentState.validate();
     FocusScope.of(context).unfocus();
 
@@ -124,10 +159,18 @@ class _UpdateClientState extends State<UpdateClient> {
       final TaskSnapshot snapshot = await uploadTask;
       final url = await snapshot.ref.getDownloadURL();
 
-      Provider.of<AuthProvdier>(context, listen: false).updatePicture(
+      String str =
+          await Provider.of<AuthProvdier>(context, listen: false).updatePicture(
         url.trim(),
         id,
       );
+      if (str != '') {
+        await showErrorDialog();
+      } else {
+        setState(() {
+          user.changeDetails(user.phone, url, user.userName);
+        });
+      }
     }
   }
 
@@ -253,7 +296,7 @@ class _UpdateClientState extends State<UpdateClient> {
                         child: Text(
                             'press on the circle in order to change your photo '),
                         onPressed: () {
-                          _trySubmitPicture(theClientuser.uid);
+                          _trySubmitPicture(uid, theClientuser);
                         },
                       )
                     ],
@@ -283,7 +326,7 @@ class _UpdateClientState extends State<UpdateClient> {
                         ),
                         ElevatedButton(
                             onPressed: (() {
-                              _trySubmitUserName(uid);
+                              _trySubmitUserName(uid, context, theClientuser);
                             }),
                             child: Text('update details')),
                       ],
@@ -316,7 +359,7 @@ class _UpdateClientState extends State<UpdateClient> {
                         ),
                         ElevatedButton(
                             onPressed: (() {
-                              _trySubmitPhone(uid);
+                              _trySubmitPhone(uid, theClientuser);
                             }),
                             child: Text('update details')),
                       ],
