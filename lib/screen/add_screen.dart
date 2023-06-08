@@ -39,11 +39,10 @@ class NewProduct extends StatefulWidget {
 
 class _NewProductState extends State<NewProduct> {
   final _formKey = GlobalKey<FormState>();
-  bool _isLoading = false;
-
+  bool _isloading = false;
   // טענת כניסה:לא מקבלת משתנים
 // טענת יציאה : הפעולה מטרתה להוסיף מוצרים  ובמידה ואחד השדות ריקים להוציא הודעת שגיאה
-  Future<void> _trySubmit() async {
+  Future<void> _trySubmit(BuildContext context) async {
     final isValid = _formKey.currentState.validate();
     FocusScope.of(context).unfocus();
     if (kind == '') {
@@ -78,22 +77,49 @@ class _NewProductState extends State<NewProduct> {
       final TaskSnapshot snapshot = await uploadTask;
       final url = await snapshot.ref.getDownloadURL();
 
-      Provider.of<ProductsProvider>(context, listen: false).addProductsData(
-          _name.trim(),
-          _price.trim(),
-          DateTime.now(),
-          kind.trim(),
-          _picture.trim(),
-          _description.trim(),
-          url.trim());
-
-      String id = Provider.of<ProductsProvider>(context, listen: false).uid;
-
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-        return TabBottomAdmin('admin');
-      }));
+      String str = await Provider.of<ProductsProvider>(context, listen: false)
+          .addProductsData(
+              _name.trim(),
+              _price.trim(),
+              DateTime.now(),
+              kind.trim(),
+              _picture.trim(),
+              _description.trim(),
+              url.trim(),
+              context)
+          .then((value) {
+        setState(() {
+          _isloading == false;
+        });
+      });
+      print(str);
+      if (str == null) {
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+          return TabBottomAdmin('admin');
+        }));
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Error message'),
+              content: Text('you got an erorr so it does not add product'),
+              actions: <Widget>[
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
     }
   }
+
+  bool isloading = false;
 
   var _description = '';
   var _picture = '';
@@ -132,98 +158,102 @@ class _NewProductState extends State<NewProduct> {
   //טענת כניסה : BuildContext פעולה שממקבל
   //טענת יציאה: פעולה שיוצרת את מסך הוספת המוצר בו רושמים את הפרטים שלו מתמונות לקטגוריות ממחירים שם ממוצר ותיאור
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-            automaticallyImplyLeading: false,
-            backgroundColor: Colors.blue,
-            title: Text(
-              'add product',
-              style: TextStyle(color: Colors.black),
-            )),
-        body: SingleChildScrollView(
-            child: Form(
-                key: _formKey,
-                child:
-                    Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                  PickPicture(
-                    onPickedImage: (image) {
-                      _selectedimage = image;
-                    },
-                  ),
-                  textfield(
-                    'nameField',
-                    (value) {
-                      if (value.isEmpty) {
-                        return 'Please enter a valid name.';
-                      }
-                      return null;
-                    },
-                    'name',
-                    (value) {
-                      _name = value;
-                    },
-                  ),
-                  textfield(
-                    'descriptionField',
-                    (value) {
-                      if (value.isEmpty) {
-                        return 'Please enter a valid name.';
-                      }
-                      return null;
-                    },
-                    'description',
-                    (value) {
-                      _description = value;
-                    },
-                  ),
-                  textfield(
-                    'priceField',
-                    (value) {
-                      if (value.isEmpty || !isNumeric(value.toString())) {
-                        return 'Please enter a valid price.';
-                      }
-                      if (double.parse(value.toString()) < 0) {
-                        return 'please enter a valid price';
-                      }
-                      return null;
-                    },
-                    'price',
-                    (value) {
-                      _price = value;
-                    },
-                  ),
-                  DropdownButton<String>(
-                    value: kind,
-                    icon: const Icon(Icons.arrow_downward),
-                    elevation: 16,
-                    style: const TextStyle(color: Colors.deepPurple),
-                    underline: Container(
-                      height: 2,
-                      color: Colors.deepPurpleAccent,
-                    ),
-                    onChanged: (String value) {
-                      // This is called when the user selects an item.
-                      setState(() {
-                        kind = value;
-                      });
-                    },
-                    items: categories
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _isLoading = true;
-                      });
-                      _trySubmit();
-                    },
-                    child: Text('add advertisement'),
-                  )
-                ]))));
+    return _isloading
+        ? CircularProgressIndicator()
+        : Scaffold(
+            appBar: AppBar(
+                automaticallyImplyLeading: false,
+                backgroundColor: Colors.blue,
+                title: Text(
+                  'add product',
+                  style: TextStyle(color: Colors.black),
+                )),
+            body: SingleChildScrollView(
+                child: Form(
+                    key: _formKey,
+                    child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          PickPicture(
+                            onPickedImage: (image) {
+                              _selectedimage = image;
+                            },
+                          ),
+                          textfield(
+                            'nameField',
+                            (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter a valid name.';
+                              }
+                              return null;
+                            },
+                            'name',
+                            (value) {
+                              _name = value;
+                            },
+                          ),
+                          textfield(
+                            'descriptionField',
+                            (value) {
+                              if (value.isEmpty) {
+                                return 'Please enter a valid name.';
+                              }
+                              return null;
+                            },
+                            'description',
+                            (value) {
+                              _description = value;
+                            },
+                          ),
+                          textfield(
+                            'priceField',
+                            (value) {
+                              if (value.isEmpty ||
+                                  !isNumeric(value.toString())) {
+                                return 'Please enter a valid price.';
+                              }
+                              if (double.parse(value.toString()) < 0) {
+                                return 'please enter a valid price';
+                              }
+                              return null;
+                            },
+                            'price',
+                            (value) {
+                              _price = value;
+                            },
+                          ),
+                          DropdownButton<String>(
+                            value: kind,
+                            icon: const Icon(Icons.arrow_downward),
+                            elevation: 16,
+                            style: const TextStyle(color: Colors.deepPurple),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.deepPurpleAccent,
+                            ),
+                            onChanged: (String value) {
+                              // This is called when the user selects an item.
+                              setState(() {
+                                kind = value;
+                              });
+                            },
+                            items: categories
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                _isloading = true;
+                              });
+                              _trySubmit(context);
+                            },
+                            child: Text('add advertisement'),
+                          )
+                        ]))));
   }
 }
