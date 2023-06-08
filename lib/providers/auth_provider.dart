@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_complete_guide/models/auth.dart';
 import 'package:flutter_complete_guide/screen/add_screen.dart';
-import 'package:flutter_complete_guide/screen/erorrMessage.dart';
 import 'package:flutter_complete_guide/screen/tab_bottom_admin.dart';
 
 class AuthProvdier with ChangeNotifier {
@@ -25,17 +24,17 @@ class AuthProvdier with ChangeNotifier {
 
 //String url, String id טענת כניסה : פעולה שמקבלת
 //Firebase טענת יציאה : פעולה שמעדכנת את תמונות המשתמש ב
-  Future<void> updatePicture(String url, String id) async {
+  Future<String> updatePicture(String url, String id) async {
     try {
       FirebaseFirestore.instance
-          .collection('url')
+          .collection('users')
           .doc(id)
           .update({"url": url}).then((result) {
         print("new user true");
-      }).catchError((onError) {
-        print(onError);
       });
+      return '';
     } catch (erorr) {
+      return erorr.toString();
     }
   }
 
@@ -66,7 +65,7 @@ class AuthProvdier with ChangeNotifier {
 
 //String uid, String username טענת כניסה : פעולה שמקבלת
 //Firebase טענת יציאה פעולה שממעדכנת את שם המשתמש של המשתמש ב
-  Future<void> updateUserName(
+  Future<String> updateUserName(
       String uid, String username, BuildContext context) async {
     try {
       FirebaseFirestore.instance
@@ -75,20 +74,26 @@ class AuthProvdier with ChangeNotifier {
           .update({'username': username}).then((result) {
         print("new USer true");
       });
+      return '';
     } catch (erorr) {
+      return erorr.toString();
     }
   }
 
 //String uid, String phone טענת כניסה : פעולה שמקבלת
 //Firebase טענת יציאה פעולה שממעדכנת את מספר הטלפון של המשתמש ב
-  void updatePhone(String uid, String phone) {
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .update({'phone': phone}).then((result) {
-      print("new USer true");
-    }).catchError((onError) {
-    });
+  Future<String> updatePhone(String uid, String phone) async {
+    try {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .update({'phone': phone}).then((result) {
+        print("new USer true");
+      });
+      return '';
+    } catch (erorr) {
+      return erorr.toString();
+    }
   }
 
   var collection = FirebaseFirestore.instance.collection('users');
