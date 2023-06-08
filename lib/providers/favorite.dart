@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/favorite_product.dart';
-import 'package:flutter_complete_guide/screen/erorrMessage.dart';
 
 import '../screen/tab_bottom_admin.dart';
 
@@ -19,7 +18,7 @@ class FavoriteProvider with ChangeNotifier {
   //String userid, String productid טענת כניסה :פעולה שמקבלת
 // Favorite בטבלה של  Firebase פעולה שמטרתה להוסיף נתונים ל
 
-  Future<void> addFavorite(String userid, String productid) async {
+  Future<String> addFavorite(String userid, String productid) async {
     try {
       await FirebaseFirestore.instance
           .collection('favorite')
@@ -28,13 +27,15 @@ class FavoriteProvider with ChangeNotifier {
         _favorite.add(FavoriteProduct(userid, productid, doc.id));
       }));
       notifyListeners();
+      return '';
     } catch (erorr) {
+      return erorr.toString();
     }
   }
   //String productid, String userid טענת כניסה :פעולה שמקבלת
 //Firebaseטענת יציאה: פעולה שמטרתה למחוק את הפריטים בעל התכונות שקיבלנו ב
 
-  Future<void> delete(String productid, String userid) async {
+  Future<String> delete(String productid, String userid) async {
     try {
       for (FavoriteProduct i in _favorite) {
         if (productid == i.productId && userid == i.userId) {
@@ -42,11 +43,11 @@ class FavoriteProvider with ChangeNotifier {
               .collection('favorite')
               .doc(i.id)
               .delete();
-          _favorite.remove(i);
         }
       }
-      notifyListeners();
+      return '';
     } catch (erorr) {
+      return erorr.toString();
     }
   }
   //String productid, String userid טענת כניסה :פעולה שמקבלת
@@ -83,10 +84,12 @@ class FavoriteProvider with ChangeNotifier {
   //String id טענת כניסה :פעולה שמקבלת
 //Firebaseטענת יציאה: פעולה שמטרתה למחוק את הפריטים בעל התכונות שקיבלנו ב
 
-  Future<void> delete1(String id) async {
+  Future<String> delete1(String id) async {
     try {
       await FirebaseFirestore.instance.collection('favorite').doc(id).delete();
+      return '';
     } catch (erorr) {
+      return erorr.toString();
     }
   }
   //String id טענת כניסה :פעולה שמקבלת
