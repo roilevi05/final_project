@@ -95,15 +95,13 @@ class _UpdateProductState extends State<UpdateProduct> {
         String str1 =
             await Provider.of<ProductsProvider>(context, listen: false)
                 .addProductsData(_name.trim(), _price.trim(), DateTime.now(),
-                    kind.trim(), '', _description.trim(), url.trim(), context)
-                .then((value) {
-          setState(() {
-            _isloading = false;
-          });
-        });
+                    kind.trim(), '', _description.trim(), url.trim(), context);
         if (str1 == null) {
           setState(() {
             product.updateProduct();
+          });
+          setState(() {
+            _isloading = false;
           });
           Navigator.of(context).push(MaterialPageRoute(builder: (_) {
             return TabBottomAdmin('admin');
@@ -214,7 +212,9 @@ class _UpdateProductState extends State<UpdateProduct> {
     return Scaffold(
       appBar: AppBar(title: Text('update client details')),
       body: _isloading
-          ? CircularProgressIndicator()
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
           : SingleChildScrollView(
               child: Form(
                   key: _formKey,
