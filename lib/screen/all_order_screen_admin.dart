@@ -2,22 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/final_order.dart';
 import 'package:flutter_complete_guide/providers/finalorder_provider.dart';
 import 'package:flutter_complete_guide/widget/all_order_widget.dart';
-import 'package:flutter_complete_guide/drawers/drawer_admin.dart';
 import 'package:provider/provider.dart';
 
-import '../models/auth.dart';
 import '../models/order.dart';
-import '../models/product.dart';
 import '../providers/product_in_order.dart';
 import '../providers/auth_provider.dart';
-import '../providers/product_provider.dart';
-import 'final_shop.dart';
 
 //String isAdmin טענת כניסה : הפעולה מקבלת
 //_AllOrderState טענת יציאה : מזמן את המחלקה של
 class AllOrder extends StatefulWidget {
   final String isAdmin;
-  AllOrder(@required this.isAdmin);
+  AllOrder( this.isAdmin);
 
   @override
   State<AllOrder> createState() => _AllOrderState();
@@ -26,7 +21,7 @@ class AllOrder extends StatefulWidget {
 class _AllOrderState extends State<AllOrder> {
   List<finalOrder> listoforders = [];
 
-  String isAdmin;
+  late String isAdmin;
   // טענת כניסה:לא מקבלת משתנים
   //isAdminל AllOrderטענת יציאה מטרת הפעולה היא להכניס את הערך שהתקבל ב
   void initState() {
@@ -67,15 +62,12 @@ class _AllOrderState extends State<AllOrder> {
     return list1;
   }
 
-  bool _isInit = true;
-  bool _isLoading = true;
+
   //  BuildContext טענת כניסה : פעולה שמקבלת
 
 //טענת יציאה: פעולה שמציגה את ההזמנות של המשתמשים
   @override
   Widget build(BuildContext context) {
-    List<Product> lstProduct =
-        Provider.of<ProductsProvider>(context, listen: false).products;
     List<order> lstProductInOrder =
         Provider.of<productInOrderProvider>(context, listen: false)
             .allProductInOrders;
