@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/final_order.dart';
-import 'package:flutter_complete_guide/models/order.dart';
 import 'package:flutter_complete_guide/providers/product_in_order.dart';
 import 'package:flutter_complete_guide/screen/tab_bottom_admin.dart';
 import 'package:provider/provider.dart';
@@ -8,11 +7,10 @@ import 'package:provider/provider.dart';
 import '../models/product.dart';
 import '../providers/auth_provider.dart';
 import '../providers/finalorder_provider.dart';
-import '../providers/product_provider.dart';
 
 class OrderScreen extends StatefulWidget {
   final Product product;
-  OrderScreen(@required this.product);
+  OrderScreen( this.product);
 
   @override
   State<OrderScreen> createState() => _OrderScreenState();
