@@ -2,8 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/container.dart';
+
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
 
@@ -13,14 +12,14 @@ import '../providers/auth_provider.dart';
 //ומציגה מסך שבו ניתן להוסיף הודעה בהתאם לזהות של השתמש String userId פעולה שמקבלת
 class NewMessage extends StatefulWidget {
   final String userId;
-  NewMessage(@required this.userId);
+  NewMessage( this.userId);
 
   @override
   State<NewMessage> createState() => _NewMessageState();
 }
 
 class _NewMessageState extends State<NewMessage> {
-  final auth = FirebaseAuth.instance.currentUser.uid;
+  final auth = FirebaseAuth.instance.currentUser!.uid;
 
   final _messageController = TextEditingController();
   @override
@@ -42,10 +41,10 @@ class _NewMessageState extends State<NewMessage> {
     final user = FirebaseAuth.instance.currentUser;
     final userData = await FirebaseFirestore.instance
         .collection('users')
-        .doc(user.uid)
+        .doc(user!.uid)
         .get();
 
-    final auth = FirebaseAuth.instance.currentUser.uid;
+    final auth = FirebaseAuth.instance.currentUser!.uid;
     List<Auth> listuser =
         Provider.of<AuthProvdier>(context, listen: false).Auths;
 
@@ -56,8 +55,8 @@ class _NewMessageState extends State<NewMessage> {
         'text': enteredMessage,
         'createAt': Timestamp.now(),
         'userId': user.uid,
-        'username': userData.data()['username'],
-        'url': userData.data()['url'],
+        'username': userData.data()!['username'],
+        'url': userData.data()!['url'],
         'isAdmin': false,
         'isRead': false
       });
@@ -66,8 +65,8 @@ class _NewMessageState extends State<NewMessage> {
         'text': enteredMessage,
         'createAt': Timestamp.now(),
         'userId': widget.userId,
-        'username': userData.data()['username'],
-        'url': userData.data()['url'],
+        'username': userData.data()!['username'],
+        'url': userData.data()!['url'],
         'isAdmin': true,
         'isRead': true
       });
