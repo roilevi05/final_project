@@ -2,14 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 
 class chat with ChangeNotifier {
-  Timestamp createAt;
-  bool isAdmin;
-  String text;
-  String url;
-  String userId;
-  String userName;
-  bool isRead;
-  String id;
+  Timestamp createAt=Timestamp.now();
+  bool isAdmin=false;
+  String text = '';
+  String url = '';
+  String userId = '';
+  String userName = '';
+  bool isRead=false;
+  String id = '';
   //Timestamp createAt, String text, String url, String userId,  String userName, bool isRead, String id טענת כניסה : פעולה שמקבלת
   //טענת יציאה : הפעולה יוצרת הודעה  חדשה
   chat(Timestamp createAt, String text, String url, String userId,
