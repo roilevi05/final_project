@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/widget/bubble_message.dart';
 import 'package:flutter_complete_guide/models/auth.dart';
@@ -10,12 +9,12 @@ import '../providers/auth_provider.dart';
 
 class ChatMessages extends StatelessWidget {
   final String userId;
-  ChatMessages(@required this.userId);
+  ChatMessages( this.userId);
   @override
   //BuildContext טענת כניסה : פעולה שמקבלת
   // טענת יציאה : פעולה שבונה את הרשימה של כל ההודעות
   Widget build(BuildContext context) {
-    final auth = FirebaseAuth.instance.currentUser.uid;
+    final auth = FirebaseAuth.instance.currentUser!.uid;
     List<Auth> listuser =
         Provider.of<AuthProvdier>(context, listen: false).Auths;
 
@@ -29,7 +28,7 @@ class ChatMessages extends StatelessWidget {
           return Center(child: CircularProgressIndicator());
         }
 
-        if (!chatSnapshots.hasData || chatSnapshots.data.docs.isEmpty) {
+        if (!chatSnapshots.hasData || chatSnapshots.data!.docs.isEmpty) {
           return const Center(
             child: Text('There are no messages yet'),
           );
@@ -41,7 +40,7 @@ class ChatMessages extends StatelessWidget {
           );
         }
         List<DocumentSnapshot> filteredMessages;
-        final loadedMessages = chatSnapshots.data.docs;
+        final loadedMessages = chatSnapshots.data!.docs;
 
         Auth admin = listuser.firstWhere((element) => element.uid == auth);
 
