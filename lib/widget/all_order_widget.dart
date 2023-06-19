@@ -3,14 +3,11 @@ import 'package:flutter_complete_guide/models/order.dart';
 import 'package:provider/provider.dart';
 
 import '../models/product.dart';
-import '../providers/product_in_order.dart';
-import '../providers/auth_provider.dart';
-import '../providers/finalorder_provider.dart';
 import '../providers/product_provider.dart';
 
 class OrderWidget extends StatefulWidget {
   final List<order> listOfOrders;
-  OrderWidget(@required this.listOfOrders);
+  OrderWidget( this.listOfOrders);
 
   @override
   State<OrderWidget> createState() => _OrderWidgetState();
