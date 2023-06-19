@@ -3,20 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_complete_guide/providers/product_provider.dart';
-import 'package:flutter_complete_guide/screen/add_screen.dart';
 import 'package:flutter_complete_guide/screen/auth_screen.dart';
-import 'package:flutter_complete_guide/screen/tab_bottom_admin.dart';
-import 'package:provider/provider.dart';
 
-import '../models/auth.dart';
-import '../providers/auth_provider.dart';
 
 
 class DrawerTabScreen extends StatelessWidget {
-  const DrawerTabScreen({Key key}) : super(key: key);
+  const DrawerTabScreen({ Key? key}) : super(key: key);
 
-  @override
   void signout() {
     FirebaseAuth.instance.signOut();
   }
