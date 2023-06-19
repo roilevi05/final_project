@@ -1,11 +1,11 @@
-import 'package:flutter/foundation.dart';
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/main.dart';
 import 'package:flutter_complete_guide/screen/two_screen_admin.dart';
 
 class OptionScreen extends StatelessWidget {
   final String isAdmin;
-  OptionScreen(@required this.isAdmin);
+  OptionScreen(this.isAdmin);
 
   int i = 0;
   //BuildContext ctx, String kind טענת כניסה : פעולה שמקבלת
@@ -96,6 +96,6 @@ class OptionScreen extends StatelessWidget {
           itemCount: category.length,
         ));
 
-    ;
+    
   }
 }
