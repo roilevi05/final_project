@@ -16,7 +16,7 @@ class SearchScreen extends StatefulWidget {
   final String isAdmin;
   final String searchlast;
 
-  SearchScreen(@required this.isAdmin, @required this.searchlast);
+  SearchScreen(this.isAdmin, this.searchlast);
   @override
   State<SearchScreen> createState() => _SearchScreenState();
 }
@@ -24,12 +24,10 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   List<Product> listproducts = [];
 
-  var _name = '';
   @override
   // טענת כניסה:לא מקבלת משתנים
   //_nameל SearchScreen יציאה מטרת הפעולה היא להכניס את הערך שהתקבל ב
   void initState() {
-    _name = widget.searchlast;
     // TODO: implement initState
     super.initState();
   }
@@ -40,7 +38,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return TextFormField(
       key: ValueKey('name'),
       validator: (value) {
-        if (value.isEmpty) {
+        if (value!.isEmpty) {
           return 'Please enter a valid name.';
         }
         return null;
@@ -49,7 +47,6 @@ class _SearchScreenState extends State<SearchScreen> {
         labelText: 'name',
       ),
       onSaved: (value) {
-        _name = value;
       },
       onChanged: (value) {
         setState(() {
@@ -58,7 +55,7 @@ class _SearchScreenState extends State<SearchScreen> {
             for (Product i in lst) {
               if (i.delete == false &&
                   i.name.contains(value) &&
-                  i.isUpdated == false) {
+                  i.isUpdate == false) {
                 listproducts.add(i);
               }
             }
