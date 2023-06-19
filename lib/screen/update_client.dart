@@ -2,23 +2,20 @@ import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_complete_guide/models/auth.dart';
-import 'package:flutter_complete_guide/models/product.dart';
+
 import 'package:flutter_complete_guide/providers/auth_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/product_provider.dart';
-import '../widget/picture_photo.dart';
 
 class UpdateClient extends StatefulWidget {
-  const UpdateClient({Key key}) : super(key: key);
+  const UpdateClient({ Key? key}) : super(key: key);
 
-  Product get updatedproduct => null;
+  Null get updatedproduct => null;
 
   @override
   State<UpdateClient> createState() => _UpdateClientState();
@@ -30,11 +27,11 @@ class _UpdateClientState extends State<UpdateClient> {
 //טענת יציאה :  פעולה שמטרתה לעדכן את פרטי המשתמש לפי הערכים שהקלדנו
   Future<void> _trySubmitUserName(
       String uid, BuildContext context, Auth user) async {
-    final isValid = _formKey.currentState.validate();
+    final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
 
     if (isValid) {
-      _formKey.currentState.save();
+      _formKey.currentState!.save();
       String str = await Provider.of<AuthProvdier>(context, listen: false)
           .updateUserName(uid, _username.trim(), context);
       if (str != '') {
@@ -50,11 +47,11 @@ class _UpdateClientState extends State<UpdateClient> {
 //טענת יציאה :  פעולה שמטרתה לעדכן את פרטי המשתמש לפי הערכים שהקלדנו
 
   Future<void> _trySubmitPhone(String uid, Auth user) async {
-    final isValid = _formKey.currentState.validate();
+    final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
 
     if (isValid) {
-      _formKey.currentState.save();
+      _formKey.currentState!.save();
       String str = await Provider.of<AuthProvdier>(context, listen: false)
           .updatePhone(uid, _phone.trim());
       if (str != '') {
@@ -72,6 +69,7 @@ class _UpdateClientState extends State<UpdateClient> {
 // Stringטענת כניסה :  פעולה שמקבלת קטע של
 // אם כן  true אם לא  ו   false טענת יציאה: פעולה שבודקת שהאיברים שמרכיבים אותו מספריים ומחזירה
   bool isNumeric(String s) {
+    // ignore: unnecessary_null_comparison
     if (s == null) {
       return false;
     }
@@ -95,18 +93,17 @@ class _UpdateClientState extends State<UpdateClient> {
 
   //String nameField, Function checkValid, String valueKey,Function changevalue טענת כניסה : פעולה שמקבלת
 //טענת יציאה: פעולה מחזירה שורה בה ניתן להקליד את הערכים של המוצר
-  Widget textfield(String nameField, Function checkValid, String valueKey,
-      Function changevalue) {
-    ValueKey<String> key = new ValueKey(valueKey);
-    return TextFormField(
-      key: key,
-      validator: checkValid,
-      decoration: InputDecoration(
-        labelText: nameField,
-      ),
-      onSaved: changevalue,
-    );
-  }
+Widget textfield(String nameField, String? Function(String?)? checkValid, String valueKey, void Function(String?)? changevalue) {
+  ValueKey<String> key = ValueKey<String>(valueKey);
+  return TextFormField(
+    key: key,
+    validator: checkValid,
+    decoration: InputDecoration(
+      labelText: nameField,
+    ),
+    onSaved: changevalue,
+  );
+}
 
   Future<void> showErrorDialog() async {
     await showDialog(
@@ -134,10 +131,11 @@ class _UpdateClientState extends State<UpdateClient> {
 // טענת יציאה : פעולה שמטרתה לעדכן את התמונה לפי הערכים שהקלדנו
 
   Future<void> _trySubmitPicture(String id, Auth user) async {
-    final isValid = _formKey.currentState.validate();
+    final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
 
     if (isValid) {
+      // ignore: unnecessary_null_comparison
       if (_imagepicker == null) {
         final snackBar = SnackBar(
           content: const Text('you do not have a picture'),
@@ -150,7 +148,7 @@ class _UpdateClientState extends State<UpdateClient> {
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
         return;
       }
-      _formKey.currentState.save();
+      _formKey.currentState!.save();
 
       final storage = FirebaseStorage.instance
           .ref()
@@ -174,7 +172,7 @@ class _UpdateClientState extends State<UpdateClient> {
     }
   }
 
-  File _imagepicker;
+  late File _imagepicker;
   // פעולה שלא מקבלת משתנים
 //טענת יציאה : פעולה שמטרתה לצלם
   void _pickedImageCamera() async {
@@ -284,10 +282,12 @@ class _UpdateClientState extends State<UpdateClient> {
                                     icon: Icon(Icons.add),
                                   )
                                 : Container(),
+                            // ignore: unnecessary_null_comparison
                             backgroundImage: _imagepicker == null
                                 ? NetworkImage(theClientuser.url)
                                 : null,
                             radius: 40,
+                            // ignore: unnecessary_null_comparison
                             foregroundImage: _imagepicker != null
                                 ? FileImage(_imagepicker)
                                 : null),
@@ -312,7 +312,7 @@ class _UpdateClientState extends State<UpdateClient> {
                         textfield(
                           'priveous : ' + theClientuser.userName,
                           (value) {
-                            if (value.isEmpty) {
+                            if (value!.isEmpty) {
                               return 'Please enter a valid name.';
                             }
                             return null;
@@ -320,7 +320,7 @@ class _UpdateClientState extends State<UpdateClient> {
                           'username',
                           (value) {
                             setState(() {
-                              _username = value;
+                              _username = value!;
                             });
                           },
                         ),
@@ -344,7 +344,7 @@ class _UpdateClientState extends State<UpdateClient> {
                           'priveous : ' + theClientuser.phone,
                           (value) {
                             if (checkphone(value.toString()) ||
-                                value.length != 10) {
+                                value!.length != 10) {
                               return 'Please enter a valid phone.';
                             }
 
@@ -353,7 +353,7 @@ class _UpdateClientState extends State<UpdateClient> {
                           'phone',
                           (value) {
                             setState(() {
-                              _phone = value;
+                              _phone = value!;
                             });
                           },
                         ),
