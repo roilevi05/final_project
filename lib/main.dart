@@ -6,9 +6,7 @@ import 'package:flutter_complete_guide/providers/chat_provider.dart';
 import 'package:flutter_complete_guide/providers/favorite.dart';
 import 'package:flutter_complete_guide/providers/finalorder_provider.dart';
 import 'package:flutter_complete_guide/providers/product_provider.dart';
-import 'package:flutter_complete_guide/screen/add_screen.dart';
 import 'package:flutter_complete_guide/screen/auth_screen.dart';
-import 'package:flutter_complete_guide/screen/tab_bottom_admin.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -38,8 +36,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.pink,
             backgroundColor: Colors.pink,
-            accentColor: Colors.deepPurple,
-            accentColorBrightness: Brightness.dark,
+
             buttonTheme: ButtonTheme.of(context).copyWith(
               buttonColor: Colors.pink,
               textTheme: ButtonTextTheme.primary,
