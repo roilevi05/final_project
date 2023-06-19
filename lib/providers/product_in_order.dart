@@ -1,21 +1,12 @@
-import 'dart:ffi';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/models/auth.dart';
-import 'package:flutter_complete_guide/models/order.dart';
-import 'package:flutter_complete_guide/models/order.dart';
 import 'package:flutter_complete_guide/models/order.dart';
 import 'package:flutter_complete_guide/providers/auth_provider.dart';
-import 'package:provider/provider.dart';
 
-import '../models/order.dart';
 import '../models/product.dart';
-import '../screen/tab_bottom_admin.dart';
 
 class productInOrderProvider with ChangeNotifier {
   List<order> _allProductInOrders = [];
@@ -49,7 +40,7 @@ class productInOrderProvider with ChangeNotifier {
   //Product product, String uid טענת כניסה :פעולה שמקבלת
 // orderproduct בטבלה של  Firebase פעולה שמטרתה להוסיף נתונים ל
 
-  Future<String> addOrder(
+  Future<void> addOrder(
       Product product, String uid, BuildContext context) async {
     FirebaseFirestore.instance.collection('orderproduct').add({
       'productid': product.id,
