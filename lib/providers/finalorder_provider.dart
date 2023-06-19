@@ -1,10 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/final_order.dart';
-import 'package:flutter_complete_guide/models/order.dart';
-import 'package:flutter_complete_guide/models/product.dart';
 
-import '../screen/tab_bottom_admin.dart';
 
 class FinalOrderProvider with ChangeNotifier {
   List<finalOrder> _allOrders = [];
@@ -38,12 +35,12 @@ class FinalOrderProvider with ChangeNotifier {
     } catch (erorr) {}
   }
 
-  String uid;
+  late String uid;
   int y = 0;
   //String userId טענת כניסה :פעולה שמקבלת
 // order בטבלה של  Firebase פעולה שמטרתה להוסיף נתונים ל
 
-  Future<String> addOrderData(String userId) async {
+  Future<void> addOrderData(String userId) async {
     FirebaseFirestore.instance.collection('order').add({
       'userid': userId,
       'issold': 'not pay',
@@ -65,7 +62,7 @@ class FinalOrderProvider with ChangeNotifier {
 
 //String uid טענת כניסה : פעולה שמקבלת
 // Firebaseשל ההזמנה מה idטענת יציאה: פעולה שמטרתה לקבל את ה
-  Future<String> returnId(String uid) async {
+  Future<void> returnId(String uid) async {
     var getCollection = await collection.get();
     var getId = getCollection.docs
         .firstWhere((element) =>
