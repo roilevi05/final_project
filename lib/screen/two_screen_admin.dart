@@ -1,20 +1,15 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/favorite_product.dart';
-import 'package:flutter_complete_guide/models/order.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 import 'package:flutter_complete_guide/providers/auth_provider.dart';
 import 'package:flutter_complete_guide/providers/favorite.dart';
 import 'package:flutter_complete_guide/providers/product_provider.dart';
-import 'package:flutter_complete_guide/screen/add_screen.dart';
-import 'package:flutter_complete_guide/screen/favorite_screen.dart';
+
 import 'package:flutter_complete_guide/screen/order_screen2.dart';
 import 'package:flutter_complete_guide/screen/update_product.dart';
 import 'package:flutter_complete_guide/drawers/drawer_admin.dart';
 import 'package:provider/provider.dart';
-import 'dart:ffi';
 
 enum sortkinds { high_to_low, low_to_high, abc, nothing }
 
@@ -23,27 +18,26 @@ enum clasifiedkinds { zero_till_one_thousand, above_one_thousand, all_products }
 class ProductScreen extends StatefulWidget {
   final String isAdmin;
   final String kind;
-  ProductScreen(@required this.kind, @required this.isAdmin);
+  ProductScreen( this.kind, this.isAdmin);
   @override
   State<ProductScreen> createState() => _ProductScreenState();
 }
 
 class _ProductScreenState extends State<ProductScreen> {
   bool islove = false;
-  @override
   List<Product> listproducts = [];
 //List<Product> lst טענת כניסה : פעולה שמקבלת
 //לפי הקטגוריה שקיבלנו  listproductsטענת יציאה : פעולה שמטרתה לעדכן את הרשימה
   void toClassify(List<Product> lst) {
     listproducts = [];
     for (Product i in lst) {
-      if (i.cat == widget.kind && i.delete == false && i.isUpdated == false) {
+      if (i.cat == widget.kind && i.delete == false && i.isUpdate == false) {
         listproducts.add(i);
       }
     }
   }
 
-  Future<Widget> getShowDialog(String str) {
+  Future getShowDialog(String str) {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -127,30 +121,28 @@ class _ProductScreenState extends State<ProductScreen> {
     return false;
   }
 
-  @override
   sortkinds _character = sortkinds.nothing;
   //String whichkindofsort, sortkinds sort טענת כניסה : פעולה שמקבלת
 //שממטרתו לשנות את הערך של המיון לפי איזה קטגוריה  Widgetטענת יציאה : וממחזירה
-  Widget sortButton(String whichkindofsort, sortkinds sort) {
-    return Row(
-      children: <Widget>[
-        Radio<sortkinds>(
-          value: sort,
-          groupValue: _character,
-          onChanged: (sortkinds value) {
-            setState(() {
-              value = sort;
-              _character = sort;
-              sortBy = whichkindofsort;
-            });
-          },
-        ),
-        Container(
-          child: Text(whichkindofsort),
-        )
-      ],
-    );
-  }
+Widget sortButton(String whichkindofsort, sortkinds sort) {
+  return Row(
+    children: <Widget>[
+      Radio<sortkinds?>(
+        value: sort,
+        groupValue: _character,
+        onChanged: (sortkinds? value) {  // Accept nullable sortkinds
+          setState(() {
+            _character = value ?? sort;
+            sortBy = whichkindofsort;
+          });
+        },
+      ),
+      Container(
+        child: Text(whichkindofsort),
+      )
+    ],
+  );
+}
 
   clasifiedkinds _casified = clasifiedkinds.all_products;
   //String whichkindofsort, clasifiedkinds clasified טענת כניסה : פעולה שמקבלת
@@ -162,10 +154,10 @@ class _ProductScreenState extends State<ProductScreen> {
         Radio<clasifiedkinds>(
           value: clasified,
           groupValue: _casified,
-          onChanged: (clasifiedkinds value) {
+          onChanged: (clasifiedkinds ?value) {
             setState(() {
               value = clasified;
-              _casified = value;
+              _casified = value?? clasifiedkinds.all_products;
               clasifiedby = whichkindofsort;
             });
           },
@@ -510,7 +502,7 @@ class _ProductScreenState extends State<ProductScreen> {
                         ],
                       ));
 
-                      ;
+                      
                     }),
                 thumbVisibility: true,
                 controller: _firstController,
