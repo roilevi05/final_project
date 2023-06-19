@@ -10,17 +10,17 @@ class MessageBubble extends StatelessWidget {
   ) : isFirstInSequence = true;
 
   const MessageBubble.next({
-    this.message,
-    this.isMe,
+    required this.message,
+    required this.isMe,
   })  : isFirstInSequence = false,
         userImage = null,
         username = null;
 
   final bool isFirstInSequence;
 
-  final String userImage;
+   final String? userImage;
 
-  final String username;
+   final String? username;
   final String message;
 
   final bool isMe;
@@ -37,7 +37,7 @@ class MessageBubble extends StatelessWidget {
             right: isMe ? 0 : null,
             child: CircleAvatar(
               backgroundImage: NetworkImage(
-                userImage,
+                userImage!,
               ),
               backgroundColor: theme.colorScheme.primary.withAlpha(180),
               radius: 23,
@@ -61,7 +61,7 @@ class MessageBubble extends StatelessWidget {
                         right: 13,
                       ),
                       child: Text(
-                        username,
+                        username!,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
