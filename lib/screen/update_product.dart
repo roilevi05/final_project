@@ -5,17 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_complete_guide/models/auth.dart';
 import 'package:flutter_complete_guide/models/product.dart';
-import 'package:flutter_complete_guide/providers/auth_provider.dart';
 import 'package:flutter_complete_guide/screen/tab_bottom_admin.dart';
-import 'package:flutter_complete_guide/screen/two_screen_admin.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 
 import '../providers/product_provider.dart';
-import '../widget/picture_photo.dart';
 
 const List<String> lst = [
   '',
@@ -35,7 +30,7 @@ const List<String> lst = [
 
 class UpdateProduct extends StatefulWidget {
   final Product updatedproduct;
-  UpdateProduct(@required this.updatedproduct);
+  UpdateProduct( this.updatedproduct);
 
   @override
   State<UpdateProduct> createState() => _UpdateProductState();
@@ -48,11 +43,12 @@ class _UpdateProductState extends State<UpdateProduct> {
   bool _isloading = false;
   Future<void> _trySubmitAllDetails(
       String id, BuildContext context, Product product) async {
-    final isValid = _formKey.currentState.validate();
+    final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
 
     if (isValid) {
-      _formKey.currentState.save();
+      _formKey.currentState!.save();
+      // ignore: unnecessary_null_comparison
       if (_imagepicker == null) {
         final snackBar = SnackBar(
           content: const Text('You do not have a picture'),
@@ -96,6 +92,7 @@ class _UpdateProductState extends State<UpdateProduct> {
             await Provider.of<ProductsProvider>(context, listen: false)
                 .addProductsData(_name.trim(), _price.trim(), DateTime.now(),
                     kind.trim(), '', _description.trim(), url.trim(), context);
+        // ignore: unnecessary_null_comparison
         if (str1 == null) {
           setState(() {
             product.updateProduct();
@@ -150,13 +147,14 @@ class _UpdateProductState extends State<UpdateProduct> {
 // Stringטענת כניסה :  פעולה שמקבלת קטע של
 // אם כן  true אם לא  ו   false טענת יציאה: פעולה שבודקת שהאיברים שמרכיבים אותו מספריים ומחזירה
   bool isNumeric(String s) {
+    // ignore: unnecessary_null_comparison
     if (s == null) {
       return false;
     }
     return double.tryParse(s) != null;
   }
 
-  File _imagepicker;
+  late File _imagepicker;
   // פעולה שלא מקבלת משתנים
 //טענת יציאה : פעולה שמטרתה להביא תמונה מהלרייה
   void _pickedImageCamera() async {
@@ -181,28 +179,23 @@ class _UpdateProductState extends State<UpdateProduct> {
     });
   }
 
-  var _username = '';
   //String nameField, Function checkValid, String valueKey,Function changevalue טענת כניסה : פעולה שמקבלת
 //טענת יציאה: פעולה מחזירה שורה בה ניתן להקליד את הערכים של המוצר
-  Widget textfield(String nameField, Function checkValid, String valueKey,
-      Function changevalue) {
-    ValueKey<String> key = new ValueKey(valueKey);
-    return TextFormField(
-      key: key,
-      validator: checkValid,
-      decoration: InputDecoration(
-        labelText: nameField,
-      ),
-      onSaved: changevalue,
-    );
-  }
-
+Widget textfield(String nameField, String? Function(String?)? checkValid, String valueKey, void Function(String?)? changevalue) {
+  ValueKey<String> key = ValueKey<String>(valueKey);
+  return TextFormField(
+    key: key,
+    validator: checkValid,
+    decoration: InputDecoration(
+      labelText: nameField,
+    ),
+    onSaved: changevalue,
+  );
+}
   var _price = '';
   var _description = '';
   var _name = '';
-  File _selectedimage;
   String kind = lst.first;
-  @override
   int isAppear = 0;
 
   //BuildContext טענת כניסה:פעולה שמקבלת
@@ -280,10 +273,12 @@ class _UpdateProductState extends State<UpdateProduct> {
                                     icon: Icon(Icons.add),
                                   )
                                 : Container(),
+                            // ignore: unnecessary_null_comparison
                             backgroundImage: _imagepicker == null
                                 ? NetworkImage(widget.updatedproduct.picture)
                                 : null,
                             radius: 40,
+                            // ignore: unnecessary_null_comparison
                             foregroundImage: _imagepicker != null
                                 ? FileImage(_imagepicker)
                                 : null),
@@ -295,7 +290,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                       textfield(
                         'priveous : ' + widget.updatedproduct.name,
                         (value) {
-                          if (value.isEmpty) {
+                          if (value!.isEmpty) {
                             return 'Please enter a valid name.';
                           }
                           return null;
@@ -303,14 +298,14 @@ class _UpdateProductState extends State<UpdateProduct> {
                         'name',
                         (value) {
                           setState(() {
-                            _name = value;
+                            _name = value!;
                           });
                         },
                       ),
                       textfield(
                         'priveous : ' + widget.updatedproduct.description,
                         (value) {
-                          if (value.isEmpty) {
+                          if (value!.isEmpty) {
                             return 'Please enter a valid description.';
                           }
                           return null;
@@ -318,14 +313,14 @@ class _UpdateProductState extends State<UpdateProduct> {
                         'description',
                         (value) {
                           setState(() {
-                            _description = value;
+                            _description = value!;
                           });
                         },
                       ),
                       textfield(
                         'priveous : ' + widget.updatedproduct.price.toString(),
                         (value) {
-                          if (!isNumeric(value.toString()) && value.isEmpty) {
+                          if (!isNumeric(value.toString()) && value!.isEmpty) {
                             return 'Please enter a valid price.';
                           }
                           if (double.parse(value.toString()) < 0) {
@@ -336,7 +331,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                         'price',
                         (value) {
                           setState(() {
-                            _price = value;
+                            _price = value!;
                           });
                         },
                       ),
@@ -349,10 +344,10 @@ class _UpdateProductState extends State<UpdateProduct> {
                           height: 2,
                           color: Colors.deepPurpleAccent,
                         ),
-                        onChanged: (String value) {
+                        onChanged: (String? value) {
                           // This is called when the user selects an item.
                           setState(() {
-                            kind = value;
+                            kind = value?? '';
                           });
                         },
                         items:
