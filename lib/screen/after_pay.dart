@@ -8,7 +8,7 @@ import 'package:flutter_complete_guide/screen/tab_bottom_admin.dart';
 // טענת כניסה:לא מקבלת משתנים
 //_AfterPayState טענת יציאה : מזמן את המחלקה של
 class AfterPay extends StatefulWidget {
-  const AfterPay({Key key}) : super(key: key);
+  const AfterPay({Key? key}) : super(key: key);
 
   @override
   State<AfterPay> createState() => _AfterPayState();
