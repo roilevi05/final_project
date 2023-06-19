@@ -1,14 +1,11 @@
-import 'dart:ffi';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/favorite_product.dart';
 
-import '../screen/tab_bottom_admin.dart';
 
 class FavoriteProvider with ChangeNotifier {
-  List<FavoriteProduct> _favorite;
+  late List<FavoriteProduct> _favorite;
 
   ///_favorite מהווה פעולה שמטרת לשלוף את הנתונים מ
 
