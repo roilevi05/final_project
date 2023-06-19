@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_complete_guide/models/auth.dart';
 import 'package:flutter_complete_guide/models/final_order.dart';
 import 'package:flutter_complete_guide/models/order.dart';
 import 'package:flutter_complete_guide/providers/product_in_order.dart';
 import 'package:flutter_complete_guide/providers/finalorder_provider.dart';
 import 'package:flutter_complete_guide/screen/pay_screen.dart';
-import 'package:flutter_complete_guide/drawers/drawer_admin.dart';
 import 'package:provider/provider.dart';
 
 import '../models/product.dart';
@@ -16,7 +14,7 @@ import '../providers/auth_provider.dart';
 import '../providers/product_provider.dart';
 
 class Cart extends StatefulWidget {
-  const Cart({Key key}) : super(key: key);
+  const Cart({Key? key}) : super(key: key);
 
   @override
   State<Cart> createState() => _CartState();
