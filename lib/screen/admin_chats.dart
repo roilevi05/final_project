@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_complete_guide/screen/all_chat.dart';
 import 'package:flutter_complete_guide/models/auth.dart';
@@ -8,20 +7,17 @@ import 'package:flutter_complete_guide/models/chat.dart';
 import 'package:flutter_complete_guide/providers/chat_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/product_in_order.dart';
 import '../providers/auth_provider.dart';
-import '../providers/finalorder_provider.dart';
-import '../providers/product_provider.dart';
 
 class AdminChat extends StatefulWidget {
-  const AdminChat({Key key}) : super(key: key);
+  const AdminChat({Key? key}) : super(key: key);
 
   @override
   State<AdminChat> createState() => _AdminChatState();
 }
 
 class _AdminChatState extends State<AdminChat> {
-  bool checkIsRead;
+  late bool checkIsRead;
   //String uid טענת כניסה :מקבלת
   //checkIsRead טענת יציאה פעולה שבודקת אם יש הודעה שלא נקראה בידי המנהל ומעדכנת את
   void changeBool(String uid) {
@@ -33,6 +29,7 @@ class _AdminChatState extends State<AdminChat> {
 //טענת יציאה : פעולה שמחזירה את הרשימה של הצאטים של המנהל עם הלקוחות
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     List<chat> listChat = Provider.of<chatProvider>(context).chats;
     List<Auth> listuser =
         Provider.of<AuthProvdier>(context, listen: false).Auths;
