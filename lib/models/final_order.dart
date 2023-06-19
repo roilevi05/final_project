@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/models/product.dart';
 
 class finalOrder with ChangeNotifier {
-  String orderid;
-  String userid;
-  Timestamp date;
-  String isSold;
+  String orderid = '';
+  String userid = '';
+  Timestamp date=Timestamp.now();
+  String isSold = '';
   //String userid, Timestamp time, String isSold, String orderid טענת כניסה : פעולה שמקבלת
   //טענת יציאה : הפעולה יוצרת הזמנה  חדשה
   finalOrder(String userid, Timestamp time, String isSold, String orderid) {
