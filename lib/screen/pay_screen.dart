@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/models/auth.dart';
-import 'package:flutter_complete_guide/models/final_order.dart';
-import 'package:flutter_complete_guide/models/product.dart';
-import 'package:flutter_complete_guide/providers/auth_provider.dart';
 import 'package:flutter_complete_guide/providers/finalorder_provider.dart';
 import 'package:flutter_complete_guide/screen/after_pay.dart';
-import 'package:flutter_complete_guide/screen/final_shop.dart';
-import 'package:flutter_complete_guide/screen/tab_bottom_admin.dart';
 import 'package:provider/provider.dart';
 
 // רשיממת החודשים
@@ -44,7 +38,7 @@ class PayScreen extends StatefulWidget {
   final double finalprice;
   final String orderid;
 
-  PayScreen(@required this.finalprice, @required this.orderid);
+  PayScreen( this.finalprice,  this.orderid);
   @override
   State<PayScreen> createState() => _PayScreenState();
 }
@@ -54,7 +48,7 @@ class _PayScreenState extends State<PayScreen> {
   // טענת כניסה : הפעולה לא מקבלת משתנים
 //טענת יציאה :פעולה שבודקת אם השדות שמילאנו אם הם תקינים וממשנה את הסטטוס של ההזמנה מלא שולם לשולם
   Future<void> _trySubmit() async {
-    final isValid = _formKey.currentState.validate();
+    final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
 
     if (isValid) {
@@ -84,8 +78,7 @@ class _PayScreenState extends State<PayScreen> {
         return;
       }
 
-      _formKey.currentState.save();
-      String uid = Provider.of<AuthProvdier>(context, listen: false).getuid();
+      _formKey.currentState!.save();
 
       String str = await Provider.of<FinalOrderProvider>(context, listen: false)
           .changeState(widget.orderid, 'pay');
@@ -121,17 +114,20 @@ class _PayScreenState extends State<PayScreen> {
   String firstyear = years.first;
   //String nameField, Function checkValid, String valueKey,Function changevalue טענת כניסה : פעולה שמקבלת
 //טענת יציאה: פעולה מחזירה שורה בה ניתן להקליד את הערכים של התשלום
-  Widget textfield(String nameField, Function checkValid, String valueKey) {
-    ValueKey<String> key = ValueKey(valueKey);
-    return TextFormField(
-      key: key,
-      validator: checkValid,
-      decoration: InputDecoration(
-        labelText: nameField,
-      ),
-      onSaved: (value) {},
-    );
-  }
+Widget textfield(String nameField, String? Function(String?)? checkValid, String valueKey) {
+  ValueKey<String> key = ValueKey<String>(valueKey);
+  return TextFormField(
+    key: key,
+    validator: checkValid,
+    decoration: InputDecoration(
+      labelText: nameField,
+    ),
+    onSaved: (value) {
+      // Add your logic here to handle saving the input value
+    },
+  );
+}
+
 
 //BuildContext טענת כניסה : פעולה שמקבלת
 // טענת יציאה : פעולה שבונה מסך בו ניתן להקליד פרטי אשראי
@@ -160,7 +156,7 @@ class _PayScreenState extends State<PayScreen> {
                 children: <Widget>[
                   Container(
                     child: textfield('credit_number', (var value) {
-                      if (value.isEmpty || value.length != 16) {
+                      if (value!.isEmpty || value.length != 16) {
                         return 'Please enter a valid credit number.';
                       }
                       return null;
@@ -169,7 +165,7 @@ class _PayScreenState extends State<PayScreen> {
                   Container(
                     child: textfield('three numbers in the back of the card ',
                         (var value) {
-                      if (value.isEmpty || value.length != 3) {
+                      if (value!.isEmpty || value.length != 3) {
                         return 'Please enter a valid credit number.';
                       }
                       return null;
@@ -188,12 +184,12 @@ class _PayScreenState extends State<PayScreen> {
                               height: 2,
                               color: Colors.deepPurpleAccent,
                             ),
-                            onChanged: (String value) {
-                              // This is called when the user selects an item.
-                              setState(() {
-                                firstmonth = value;
-                              });
-                            },
+onChanged: (String? value) {
+  // This is called when the user selects an item.
+  setState(() {
+    firstmonth = value ?? '';  // Provide a default value in case value is null
+  });
+},
                             items: month
                                 .map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
@@ -214,12 +210,12 @@ class _PayScreenState extends State<PayScreen> {
                               height: 2,
                               color: Colors.deepPurpleAccent,
                             ),
-                            onChanged: (String value) {
-                              // This is called when the user selects an item.
-                              setState(() {
-                                firstyear = value;
-                              });
-                            },
+onChanged: (String? value) {
+  setState(() {
+    firstyear = value ?? '';
+  });
+},
+
                             items: years
                                 .map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
