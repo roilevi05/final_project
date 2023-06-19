@@ -1,11 +1,12 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_complete_guide/screen/add_screen.dart';
 import 'package:image_picker/image_picker.dart';
 
 //ומצלמת את התמונה  Function פעולה שמקבלת
 class PickPicture extends StatefulWidget {
-  const PickPicture({Key key, @required this.onPickedImage}) : super(key: key);
+  const PickPicture({Key? key, required this.onPickedImage}) : super(key: key);
   final void Function(File image) onPickedImage;
 
   @override
@@ -13,7 +14,7 @@ class PickPicture extends StatefulWidget {
 }
 
 class _PickPictureState extends State<PickPicture> {
-  File _imagepicker;
+  late File _imagepicker;
   // פעולה שלא מקבלת משתנים
 //טענת יציאה : פעולה שמטרתה לצלם
   void _pickedimagecamera() async {
