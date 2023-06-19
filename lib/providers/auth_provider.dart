@@ -1,16 +1,14 @@
-import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_complete_guide/models/auth.dart';
-import 'package:flutter_complete_guide/screen/add_screen.dart';
 import 'package:flutter_complete_guide/screen/tab_bottom_admin.dart';
 
 class AuthProvdier with ChangeNotifier {
   String adminId = 'js5ogWgGeyfiaOnCvs9jYDF2i943';
-  String uid;
+  late String uid;
 //של המשתמש שנכנס idעולה שמחזירה את ה
   String getuid() {
     return uid;
@@ -38,7 +36,6 @@ class AuthProvdier with ChangeNotifier {
     }
   }
 
-  var _isLoading = false;
   final _auth = FirebaseAuth.instance;
   List<Auth> _Auths = [];
 
@@ -104,7 +101,6 @@ class AuthProvdier with ChangeNotifier {
       String phone, bool isLogin, BuildContext ctx, String url) async {
     UserCredential authResult;
     try {
-      _isLoading = true;
 
       if (isLogin) {
         authResult = await _auth.signInWithEmailAndPassword(
@@ -132,7 +128,7 @@ class AuthProvdier with ChangeNotifier {
         );
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(authResult.user.uid)
+            .doc(authResult.user?.uid)
             .set({
           'username': username,
           'email': email,
@@ -145,17 +141,13 @@ class AuthProvdier with ChangeNotifier {
           MaterialPageRoute(builder: (context) => TabBottomAdmin('client')),
         );
       }
-      this.uid = authResult.user.uid;
+      this.uid = authResult.user!.uid;
     } on PlatformException catch (err) {
-      var message = 'An error occurred, pelase check your credentials!';
 
       if (err.message != null) {
-        message = err.message;
       }
 
-      _isLoading = false;
     } catch (err) {
-      _isLoading = false;
 
       final snackBar = SnackBar(
         content: const Text('you have a mistake in your detail'),
@@ -168,7 +160,6 @@ class AuthProvdier with ChangeNotifier {
       ScaffoldMessenger.of(ctx).showSnackBar(snackBar);
       return;
 
-      print(err);
     }
     notifyListeners();
   }
