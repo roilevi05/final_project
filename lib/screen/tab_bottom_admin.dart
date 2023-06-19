@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_complete_guide/screen/admin_chats.dart';
@@ -26,7 +25,7 @@ import 'option_screen_admin.dart';
 //_TabBottomAdminState טענת יציאה : מזמן את המחלקה של
 class TabBottomAdmin extends StatefulWidget {
   final String kind;
-  TabBottomAdmin(@required this.kind);
+  TabBottomAdmin( this.kind);
   @override
   State<TabBottomAdmin> createState() => _TabBottomAdminState();
 }
