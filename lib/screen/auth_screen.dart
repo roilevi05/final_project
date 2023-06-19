@@ -2,15 +2,12 @@ import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_complete_guide/providers/auth_provider.dart';
-import 'package:flutter_complete_guide/providers/finalorder_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../widget/picture_photo.dart';
 
 class AuthScreen extends StatefulWidget {
-  @override
   final bool isLoading = false;
 
   _AuthScreenState createState() => _AuthScreenState();
@@ -35,6 +32,7 @@ class _AuthScreenState extends State<AuthScreen> {
 // אם כן  true אם לא  ו   false טענת יציאה: פעולה שבודקת שהאיברים שמרכיבים אותו מספריים ומחזירה
 
   bool isNumeric(String str) {
+    // ignore: unnecessary_null_comparison
     if (str == null) {
       return false;
     }
@@ -47,7 +45,7 @@ class _AuthScreenState extends State<AuthScreen> {
     return TextFormField(
       key: ValueKey('phone'),
       validator: (value) {
-        if (checkphone(value.toString()) || value.length != 10) {
+        if (checkphone(value.toString()) || value!.length != 10) {
           return 'Please enter a valid phone.';
         }
         return null;
@@ -57,13 +55,11 @@ class _AuthScreenState extends State<AuthScreen> {
         labelText: 'phone',
       ),
       onSaved: (value) {
-        _phone = value;
+        _phone = value!;
       },
     );
   }
 
-  final _auth = FirebaseAuth.instance;
-  var _isLoading = false;
   final _formKey = GlobalKey<FormState>();
   var _isLogin = true;
   var _userEmail = '';
@@ -75,10 +71,11 @@ class _AuthScreenState extends State<AuthScreen> {
 // טענת יציאה : הפעולה מטרתה לאמת את פרטי המשתמש ולחבר אותו לאפליקציה
 
   Future<void> _trySubmit() async {
-    final isValid = _formKey.currentState.validate();
+    final isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
 
     if (!_isLogin) {
+      // ignore: unnecessary_null_comparison
       if (_selectedimage == null) {
         final snackBar = SnackBar(
           content: const Text('you do not have a picture'),
@@ -98,7 +95,7 @@ class _AuthScreenState extends State<AuthScreen> {
       final TaskSnapshot snapshot = await uploadTask;
       final url = await snapshot.ref.getDownloadURL();
       if (isValid) {
-        _formKey.currentState.save();
+        _formKey.currentState!.save();
         Provider.of<AuthProvdier>(context, listen: false).submitAuthForm(
             _userEmail.trim(),
             _userPassword.trim(),
@@ -110,7 +107,7 @@ class _AuthScreenState extends State<AuthScreen> {
       }
     } else {
       if (isValid) {
-        _formKey.currentState.save();
+        _formKey.currentState!.save();
         Provider.of<AuthProvdier>(context, listen: false).submitAuthForm(
             _userEmail.trim(),
             _userPassword.trim(),
@@ -125,7 +122,7 @@ class _AuthScreenState extends State<AuthScreen> {
   //טענת כניסה :  לא מקבלת משתנים
 
 //של מסך ההתחברות  Widgetטענת יציאה : פעולה שמחזירה
-  File _selectedimage;
+  late File _selectedimage;
   Widget authForm() {
     return Center(
       child: Card(
@@ -141,13 +138,13 @@ class _AuthScreenState extends State<AuthScreen> {
                   if (!_isLogin)
                     PickPicture(
                       onPickedImage: (image) {
-                        _selectedimage = image as File;
+                        _selectedimage = image;
                       },
                     ),
                   TextFormField(
                     key: ValueKey('email'),
                     validator: (value) {
-                      if (value.isEmpty || !value.contains('@')) {
+                      if (value!.isEmpty || !value.contains('@')) {
                         return 'Please enter a valid email address.';
                       }
                       return null;
@@ -157,28 +154,28 @@ class _AuthScreenState extends State<AuthScreen> {
                       labelText: 'Email address',
                     ),
                     onSaved: (value) {
-                      _userEmail = value;
+                      _userEmail = value!;
                     },
                   ),
                   if (!_isLogin)
                     TextFormField(
                       key: ValueKey('username'),
                       validator: (value) {
-                        if (value.isEmpty || value.length < 4) {
+                        if (value!.isEmpty || value.length < 4) {
                           return 'Please enter at least 4 characters';
                         }
                         return null;
                       },
                       decoration: InputDecoration(labelText: 'Username'),
                       onSaved: (value) {
-                        _userName = value;
+                        _userName = value!;
                       },
                     ),
                   if (!_isLogin) phone(),
                   TextFormField(
                     key: ValueKey('password'),
                     validator: (value) {
-                      if (value.isEmpty || value.length < 7) {
+                      if (value!.isEmpty || value.length < 7) {
                         return 'Password must be at least 7 characters long.';
                       }
                       return null;
@@ -186,7 +183,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     decoration: InputDecoration(labelText: 'Password'),
                     obscureText: true,
                     onSaved: (value) {
-                      _userPassword = value;
+                      _userPassword = value!;
                     },
                   ),
                   SizedBox(height: 12),
