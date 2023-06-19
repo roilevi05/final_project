@@ -6,13 +6,12 @@ import 'package:flutter_complete_guide/models/favorite_product.dart';
 import 'package:flutter_complete_guide/models/product.dart';
 import 'package:flutter_complete_guide/providers/auth_provider.dart';
 import 'package:flutter_complete_guide/providers/favorite.dart';
-import 'package:flutter_complete_guide/drawers/drawer_tabbaradmin.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/product_provider.dart';
 
 class FavoriteScreen extends StatefulWidget {
-  const FavoriteScreen({Key key}) : super(key: key);
+  const FavoriteScreen({Key? key}) : super(key: key);
 
   @override
   State<FavoriteScreen> createState() => _FavoriteScreenState();
