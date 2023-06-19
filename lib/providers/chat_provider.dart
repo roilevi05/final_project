@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_complete_guide/models/chat.dart';
 
-import '../screen/tab_bottom_admin.dart';
 
 class chatProvider with ChangeNotifier {
   List<chat> _chats = [];
